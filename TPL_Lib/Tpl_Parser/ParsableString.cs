@@ -49,8 +49,8 @@ namespace TPL_Lib.Tpl_Parser
         {
             { TokenType.NULL, new Regex("^$", RegexOptions.Compiled) },
             { TokenType.QUOTE, new Regex("^(\"|').*\\1$", RegexOptions.Compiled) },
-            { TokenType.INT, new Regex("^[0-9]+$", RegexOptions.Compiled) },
-            { TokenType.DECIMAL, new Regex(@"^[0-9]+(\.[0-9]+)?$", RegexOptions.Compiled) },
+            { TokenType.INT, new Regex("^-?[0-9]+$", RegexOptions.Compiled) },
+            { TokenType.DECIMAL, new Regex(@"^-?[0-9]+(\.[0-9]+)?$", RegexOptions.Compiled) },
             { TokenType.WORD, new Regex("^[A-Z]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
             { TokenType.VAR_NAME, new Regex(@"^(?:(\$[+-]?[_A-Z0-9]+)|([+-]?[_A-Z]+[_A-Z0-9]+))$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
             { TokenType.PARAMETER, new Regex(@"^(?<name>[A-Z]+?) *= *(?<value>[^\s].*?) *$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
