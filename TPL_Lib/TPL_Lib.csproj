@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{74D58308-8CB7-409B-A3A9-B502853117F0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>TPL_Lib</RootNamespace>
+    <AssemblyName>TPL_Lib</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Functions\String Functions\TplStringConcat.cs" />
+    <Compile Include="Functions\String Functions\TplStringPad.cs" />
+    <Compile Include="Functions\String Functions\TplSubstring.cs" />
+    <Compile Include="Functions\String Functions\TplChangeCase.cs" />
+    <Compile Include="Functions\TplBetween.cs" />
+    <Compile Include="Functions\TplDedup.cs" />
+    <Compile Include="Functions\TplEval.cs" />
+    <Compile Include="Functions\TplFunction.cs" />
+    <Compile Include="Functions\TplGroup.cs" />
+    <Compile Include="Functions\TplKeyValue.cs" />
+    <Compile Include="Functions\TplRegex.cs" />
+    <Compile Include="Functions\String Functions\TplReplace.cs" />
+    <Compile Include="Functions\TplSelect.cs" />
+    <Compile Include="Functions\TplSort.cs" />
+    <Compile Include="Functions\TplStats.cs" />
+    <Compile Include="Functions\TplWhere.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TplSearch.cs" />
+    <Compile Include="TplResult.cs" />
+    <Compile Include="Tpl_Parser\ParsableString.cs" />
+    <Compile Include="Tpl_Parser\Parser.cs" />
+    <Compile Include="Tpl_Parser\StringExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="ExpressionEV">
+      <HintPath>..\..\ExpressionEV\ExpressionEV\bin\Release\ExpressionEV.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DLL\ExpressionEV.dll" />
+    <Content Include="DLL\TPL_Lib.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
