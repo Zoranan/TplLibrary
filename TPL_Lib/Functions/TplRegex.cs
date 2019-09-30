@@ -61,7 +61,6 @@ namespace TPL_Lib.Functions
         }
         #endregion
 
-
         #region Processing
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
