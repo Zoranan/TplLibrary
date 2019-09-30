@@ -79,6 +79,7 @@
       <Link>DLL\Splice.dll</Link>
     </Content>
     <Content Include="bin\Release\ExpressionEV.dll" />
+    <Content Include="bin\Release\Splice.dll" />
     <Content Include="bin\Release\TPL_Lib.dll" />
     <Content Include="DLL\ExpressionEV.dll" />
   </ItemGroup>
