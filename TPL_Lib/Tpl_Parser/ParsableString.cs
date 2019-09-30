@@ -329,13 +329,13 @@ namespace TPL_Lib.Tpl_Parser
                 else if (quoteType != null && !escapeNext && _string.ContainsStringAt(quoteType, i))
                     quoteType = null;
 
-                else if (_string[i] == ',' && i == startingPosition)
+                else if (quoteType == null && _string[i] == ',' && i == startingPosition)
                 {
                     i++;
                     break;
                 }
 
-                else if (quoteType == null && _string[i].IsWhiteSpaceChar() || _string[i] == ',')
+                else if (quoteType == null && _string[i].IsWhiteSpaceChar() || quoteType == null && _string[i] == ',')
                     break;
             }
 
