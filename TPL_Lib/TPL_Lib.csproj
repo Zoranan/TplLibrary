@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\ExtensionMethods.cs" />
+    <Compile Include="Functions\String Functions\TplSplice.cs" />
     <Compile Include="Functions\String Functions\TplStringConcat.cs" />
     <Compile Include="Functions\String Functions\TplStringPad.cs" />
     <Compile Include="Functions\String Functions\TplSubstring.cs" />
@@ -68,9 +69,15 @@
       <HintPath>..\..\ExpressionEV\ExpressionEV\bin\Release\ExpressionEV.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="Splice">
+      <HintPath>..\..\Splice\TextFormatterLanguage\bin\Release\Splice.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\..\Splice\TextFormatterLanguage\bin\Release\Splice.dll">
+      <Link>DLL\Splice.dll</Link>
+    </Content>
     <Content Include="bin\Release\ExpressionEV.dll" />
     <Content Include="bin\Release\TPL_Lib.dll" />
     <Content Include="DLL\ExpressionEV.dll" />

@@ -281,6 +281,9 @@ namespace TPL_Lib.Functions
                 case "group":
                     func = new TplGroup(funcString);
                     break;
+                case "splice":
+                    func = new TplSplice(funcString);
+                    break;
                 default:
                     throw new InvalidOperationException($"{fName.OriginalValue} is not a recognised function name");
 
