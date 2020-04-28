@@ -23,7 +23,7 @@ namespace TPL_Lib.Functions
         #endregion
 
         #region Properties
-        private List<string> TargetFields { get; set; }
+        internal List<string> TargetFields { get; set; }
         /// <summary>
         /// Determines how duplicates are detected; consecutively or through the whole result set
         /// </summary>

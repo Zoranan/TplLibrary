@@ -221,7 +221,7 @@ namespace TPL_Lib.Functions
 
         internal TplFunction GetTplFunctionFromQuery(string query)
         {
-            TplFunction func = null;
+            TplFunction func;
 
             var funcString = new ParsableString(query);
             var fName = funcString.GetNext(TokenType.WORD);
@@ -229,7 +229,7 @@ namespace TPL_Lib.Functions
             if (!fName.IsSuccess)
                 throw new InvalidOperationException($"Invalid function name token");
 
-            switch (fName.OriginalValue)
+            switch (fName.OriginalValue.ToLower())//TODO: Should this be case insensitive?
             {
                 case "dedup":
                     func = new TplDedup(funcString);
@@ -291,90 +291,6 @@ namespace TPL_Lib.Functions
             else
                 throw new InvalidOperationException(string.Format("\"{0}\" is not a recognised command", fName));
         }
-
-        //internal TplFunction GetTplFunctionFromQuery(string query)
-        //{
-        //    var fNameMatch = _functionNameRegex.Match(query);
-        //    if (fNameMatch.Success)
-        //    {
-        //        var argsQuery = _functionNameRegex.Replace(query, "");
-        //        var fName = fNameMatch.Groups["funcName"].Value.ToLower();
-        //        TplFunction func = null;
-
-        //        switch (fName)
-        //        {
-        //            case "dedup":
-        //                func = new TplDedup(argsQuery);
-        //                break;
-        //            case "rex":
-        //                func = new TplRegex(argsQuery);
-        //                break;
-        //            case "select":
-        //                func = new TplSelect(argsQuery);
-        //                break;
-        //            case "sort":
-        //                func = new TplSort(argsQuery);
-        //                break;
-        //            case "keyvalue":
-        //            case "kv":
-        //                func = new TplKeyValue(argsQuery);
-        //                break;
-        //            case "stats":
-        //                func = new TplStats(argsQuery);
-        //                break;
-        //            case "count":
-        //                func = new TplStats("count " + argsQuery);
-        //                break;
-        //            case "sum":
-        //                func = new TplStats("sum " + argsQuery);
-        //                break;
-        //            case "avg":
-        //                func = new TplStats("avg " + argsQuery);
-        //                break;
-        //            case "where":
-        //                func = new TplWhere(argsQuery);
-        //                break;
-        //            case "eval":
-        //                func = new TplEval(argsQuery);
-        //                break;
-        //            case "replace":
-        //                func = new TplReplace(argsQuery);
-        //                break;
-        //            case "pad":
-        //                func = new TplStringPad(argsQuery);
-        //                break;
-        //            case "substring":
-        //                func = new TplSubstring(argsQuery);
-        //                break;
-        //            case "concat":
-        //                func = new TplStringConcat(argsQuery);
-        //                break;
-        //            case "between":
-        //                func = new TplBetween(argsQuery);
-        //                break;
-        //            case "tolower":
-        //                func = new TplChangeCase(argsQuery);
-        //                break;
-        //            case "toupper":
-        //                func = new TplChangeCase(argsQuery);
-        //                ((TplChangeCase)func).ToUpper = true;
-        //                break;
-        //            case "group":
-        //                func = new TplGroup(argsQuery);
-        //                break;
-        //            default:
-        //                throw new ArgumentException(fName + " is not a recognised function name");
-
-        //        }
-        //        if (func != null)
-        //            return func;
-
-        //        else
-        //            throw new ArgumentException(string.Format("\"{0}\" is not a recognised command", fName));
-        //    }
-        //    else
-        //        throw new ArgumentException("No command found in \"{0}\"", query);
-        //}
 
         protected abstract List<TplResult> InnerProcess(List<TplResult> input);
     }

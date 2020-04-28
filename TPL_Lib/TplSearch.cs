@@ -47,7 +47,6 @@ namespace TPL_Lib
 
         #region Fields
         private Regex _regex;
-        private bool _hasSourceParam = false;
         private string _srcPath;
         private string _srcDirectory;
         private string _srcFilePattern;
@@ -85,7 +84,7 @@ namespace TPL_Lib
                     if (match.Success)
                     {
                         _srcPath = value;
-                        _hasSourceParam = true;
+                        HasSource = true;
                         _srcDirectory = match.Groups["dir"].Value;
                         _srcFilePattern = match.Groups["file"].Value;
 
@@ -100,6 +99,9 @@ namespace TPL_Lib
 
             }
         }
+
+        public bool HasSource { get; private set; }
+
         public string Query { get; set; }
         public int Percent
         {
@@ -125,7 +127,7 @@ namespace TPL_Lib
         {
             _srcDirectory = search._srcDirectory;
             _srcFilePattern = search._srcFilePattern;
-            _hasSourceParam = search._hasSourceParam;
+            HasSource = search.HasSource;
 
             Mode = search.Mode;
             Status = search.Status;
@@ -352,7 +354,7 @@ namespace TPL_Lib
             var queryFunctions = query.SplitUnquoted();
             bool processAsSearch = false;
 
-            //Try to add the first item. If it fails, we need to attempt to process it as a search
+            //Try to add the first item. If it fails, we need to attempt to process it as a TplSearch
             try { AddToPipeline(GetTplFunctionFromQuery(queryFunctions[0])); }
             catch (InvalidOperationException){ processAsSearch = true; }
 
@@ -387,7 +389,7 @@ namespace TPL_Lib
 
                             if (match.Success)
                             {
-                                _hasSourceParam = true;
+                                HasSource = true;
                                 _srcDirectory = match.Groups["dir"].Value;
                                 _srcFilePattern = match.Groups["file"].Value;
 
@@ -422,7 +424,7 @@ namespace TPL_Lib
 
         #region Loading Files
 
-        private List<TplResult> LoadFromFiles()
+        private List<TplResult> ProcessFromFile()
         {
             var results = new List<TplResult>();
 
@@ -484,8 +486,8 @@ namespace TPL_Lib
         protected override List<TplResult> InnerProcess(List<TplResult> input = null)
         {
             if (input == null)
-                if (_hasSourceParam)
-                    input = LoadFromFiles();
+                if (HasSource)
+                    input = ProcessFromFile();
                 else
                     throw new DirectoryNotFoundException("No input was provided for the query to process. Try specifying a source path, or passing a result list into the query");
 

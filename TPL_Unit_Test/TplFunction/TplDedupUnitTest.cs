@@ -12,46 +12,6 @@ namespace TPL_Unit_Test
         [TestMethod]
         public void TplDedup_Query_String_Constructor_Test()
         {
-            //fields first, then parameters
-            TplDedup tplDed = new TplDedup("field1, field_2  Field__3, sort=last, consecutive=true");
-
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.Last, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.Consecutive, "Dedup mode was " + tplDed.Mode);
-
-            //parameters first, then fields
-            tplDed = new TplDedup("sort=first, consecutive=true field1, field_2  Field__3");
-
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.First, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.Consecutive, "Dedup mode was " + tplDed.Mode);
-            Assert.IsTrue(tplDed.TargetFields.Count == 3, "Only " + tplDed.TargetFields.Count + "/3 fields were extracted");
-
-            //parameter, then field(s), then parameter (non default values)
-            tplDed = new TplDedup(" consecutive=true field1, field_2  Field__3, sort=first");
-
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.First, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.Consecutive, "Dedup mode was " + tplDed.Mode);
-            Assert.IsTrue(tplDed.TargetFields.Count == 3, "Only " + tplDed.TargetFields.Count + "/3 fields were extracted");
-
-            //fields only
-            tplDed = new TplDedup("field1, field_2");
-
-            Assert.IsTrue(tplDed.TargetFields.Count == 2, "Only " + tplDed.TargetFields.Count + "/2 fields were extracted");
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.Last, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.All, "Dedup mode was " + tplDed.Mode);
-
-            //param(s) only
-            tplDed = new TplDedup("  sort =  first");
-
-            Assert.IsTrue(tplDed.TargetFields.Count == 1, tplDed.TargetFields.Count + " fields were extracted");
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.First, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.All, "Dedup mode was " + tplDed.Mode);
-
-            //blank query should have default values
-            tplDed = new TplDedup();
-
-            Assert.IsTrue(tplDed.TargetFields.Count == 1, tplDed.TargetFields.Count + " fields were extracted");
-            Assert.IsTrue(tplDed.SortMode == TplDedup.DedupSort.Last, "Sort mode was " + tplDed.SortMode);
-            Assert.IsTrue(tplDed.Mode == TplDedup.DedupMode.All, "Dedup mode was " + tplDed.Mode);
         }
 
         [TestMethod]

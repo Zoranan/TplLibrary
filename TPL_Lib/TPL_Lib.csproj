@@ -70,9 +70,10 @@
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Content Include="DLL\ExpressionEV.dll" />
-    <Content Include="DLL\TPL_Lib.dll" />
+    <Content Include="bin\Release\ExpressionEV.dll" />
+    <Content Include="bin\Release\TPL_Lib.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
