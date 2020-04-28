@@ -49,11 +49,11 @@ namespace TPL_Lib.Tpl_Parser
         {
             { TokenType.NULL, new Regex("^$", RegexOptions.Compiled) },
             { TokenType.QUOTE, new Regex("^(\"|').*\\1$", RegexOptions.Compiled) },
-            { TokenType.INT, new Regex("^[0-9]+$", RegexOptions.Compiled) },
-            { TokenType.DECIMAL, new Regex(@"^[0-9]+(\.[0-9]+)?$", RegexOptions.Compiled) },
+            { TokenType.INT, new Regex("^-?[0-9]+$", RegexOptions.Compiled) },
+            { TokenType.DECIMAL, new Regex(@"^-?[0-9]+(\.[0-9]+)?$", RegexOptions.Compiled) },
             { TokenType.WORD, new Regex("^[A-Z]+$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
             { TokenType.VAR_NAME, new Regex(@"^(?:(\$[+-]?[_A-Z0-9]+)|([+-]?[_A-Z]+[_A-Z0-9]+))$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
-            { TokenType.PARAMETER, new Regex(@"^(?<name>[A-Z]+?) *= *(?<value>[^\s].*?) *$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
+            { TokenType.PARAMETER, new Regex(@"^[A-Z]+? *= *[^\s].*? *$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
             { TokenType.COMMA, new Regex(@"^,$", RegexOptions.Compiled) },
             { TokenType.EQUALS, new Regex(@"^=$", RegexOptions.Compiled) },
             //{ TokenType.LIST, new Regex(@"^([^,]+,[^,]+)+$", RegexOptions.Compiled | RegexOptions.IgnoreCase) },
@@ -329,13 +329,13 @@ namespace TPL_Lib.Tpl_Parser
                 else if (quoteType != null && !escapeNext && _string.ContainsStringAt(quoteType, i))
                     quoteType = null;
 
-                else if (_string[i] == ',' && i == startingPosition)
+                else if (quoteType == null && _string[i] == ',' && i == startingPosition)
                 {
                     i++;
                     break;
                 }
 
-                else if (quoteType == null && _string[i].IsWhiteSpaceChar() || _string[i] == ',')
+                else if (quoteType == null && _string[i].IsWhiteSpaceChar() || quoteType == null && _string[i] == ',')
                     break;
             }
 
@@ -347,7 +347,7 @@ namespace TPL_Lib.Tpl_Parser
             {
                 var valueToken = result.PeekNext(false).PeekNext(false);
 
-                if (!valueToken.IsType(TokenType.WORD) && !valueToken.IsType(TokenType.QUOTE))
+                if (!valueToken.IsType(TokenType.WORD) && !valueToken.IsType(TokenType.QUOTE) && !valueToken.IsType(TokenType.DECIMAL))
                     throw new ArgumentException($"Token type {valueToken.TokenType} is an invalid type for the value of a parameter");
 
                 result = TokenResult.CreateParam(this, _string.Substring(startingPosition, valueToken.Position + valueToken.Length - startingPosition), startingPosition, result, valueToken);

@@ -59,6 +59,8 @@ namespace TPL_Lib.Functions.String_Functions
         public TplReplace(ParsableString query)
         {
             string findTerm = null;
+            bool caseWasSet = false;
+            bool modeWasSet = false;
 
             query.GetNextList(TokenType.VAR_NAME)
                 .OnSuccess(fields => _targetFields = fields.ResultsList.Select(f => f.Value()).ToList())
@@ -82,13 +84,19 @@ namespace TPL_Lib.Functions.String_Functions
 
                         case "casesensitive":
                             _caseSensitive = param.ParamValue.Value<bool>();
+                            caseWasSet = true;
                             break;
 
                         case "mode":
+                            modeWasSet = true;
                             switch (param.ParamValue.Value().ToLower())
                             {
                                 case "rex":
                                     _regexMode = true;
+
+                                    if (!caseWasSet)
+                                        _caseSensitive = true;
+
                                     break;
                                 case "normal":
                                     _regexMode = false;
@@ -112,12 +120,20 @@ namespace TPL_Lib.Functions.String_Functions
 
             //Final checking
             if (_targetGroup != null && !_regexMode)
-                _regexMode = true;
+            {
+                if (modeWasSet)
+                    throw new ArgumentException($"Replace function must be in Regex mode to use the group parameter");
+
+                else
+                    _regexMode = true;
+            }
 
             if (!_regexMode)
             {
                 findTerm = Regex.Escape(findTerm);
-                _caseSensitive = false;
+                
+                if (!caseWasSet)
+                    _caseSensitive = false;
             }
 
             var options = RegexOptions.Compiled;

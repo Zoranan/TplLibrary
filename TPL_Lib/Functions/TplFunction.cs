@@ -262,6 +262,7 @@ namespace TPL_Lib.Functions
                 case "pad":
                     func = new TplStringPad(funcString);
                     break;
+                case "substr":
                 case "substring":
                     func = new TplSubstring(funcString);
                     break;
@@ -280,6 +281,9 @@ namespace TPL_Lib.Functions
                     break;
                 case "group":
                     func = new TplGroup(funcString);
+                    break;
+                case "splice":
+                    func = new TplSplice(funcString);
                     break;
                 default:
                     throw new InvalidOperationException($"{fName.OriginalValue} is not a recognised function name");
