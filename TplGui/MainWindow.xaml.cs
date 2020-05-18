@@ -69,6 +69,7 @@ namespace TplGui
                     var results = query.Process();
                     var resultWindow = new ResultsGridWindow();
                     resultWindow.InitDataGrid(results);
+                    resultWindow.Owner = this;
                     resultWindow.Show();
                 }
             }

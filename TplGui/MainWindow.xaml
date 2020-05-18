@@ -33,7 +33,9 @@
             <Button Width="25" 
                     Height="25"
                     Content="X"
-                    HorizontalAlignment="Right" Click="closeErrorPane_ButtonClick"/>
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Click="closeErrorPane_ButtonClick"/>
         </Grid>
 
     </Grid>

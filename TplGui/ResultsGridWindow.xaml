@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:TplGui"
         mc:Ignorable="d"
         Background="{StaticResource PaleBlack}"
+        WindowStartupLocation="CenterOwner"
         Title="Results Grid" Height="480" Width="720">
     <Grid>
         <DataGrid Name="ResultsGrid"
@@ -32,9 +33,6 @@
                     <Setter Property="Foreground" Value="LightGray"/>
                     <Setter Property="Background" Value="{StaticResource NiceBlue}"/>
                     <Setter Property="Padding" Value="4,4,8,4"/>
-                    <!--<Setter Property="BorderBrush" Value="#a8a8a8"></Setter>
-                    <Setter Property="BorderThickness" Value="2"></Setter>
-                    -->
                 </Style>
             </DataGrid.ColumnHeaderStyle>
 

@@ -1,29 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using TplLib.Functions.String_Functions;
-using TplLib.Tpl_Parser;
 
 namespace TplLib.Functions
 {
     public abstract class TplFunction
     {
-        #region Fields
-        // REGEXs
-        // Always pull parameters first
-        //internal static readonly Regex _functionNameRegex = new Regex("^\\s*(?<funcName>[A-Za-z]+) *", RegexOptions.Compiled);
-        //internal static readonly Regex _parameterRegex = new Regex("\\s*(?<paramName>[A-Za-z_]+) *= *(?<value>(([\"']).*?[\"'])|([A-Za-z0-9_]+))", RegexOptions.Compiled);
-        //internal static readonly Regex _quotesRegex = new Regex("(?<!\\\\)([\"'])(?:(?=(\\\\?))\\2.)*?\\1", RegexOptions.Compiled);
-        //After parameters are removed, field names can be extracted
-        //protected static readonly Regex _fieldNameRegex =    new Regex(@"\s*(?<field>((?<=\$)[\w.]+|[_A-Za-z]+[A-Za-z0-9_.]*))(\s|,|$)+", RegexOptions.Compiled);
-        //protected static readonly Regex _dirFieldNameRegex = new Regex(@"\s*(?<field>((?<=\$)[+-]?[\w.]+|[+-]?[_A-Za-z]+[A-Za-z0-9_.]*))[\s|,]*", RegexOptions.Compiled);
-
-        //public static readonly Regex _nameAtEndRegex = new Regex(@"(^| +)([Aa]s|AS) +(?<Name>\w+)$", RegexOptions.Compiled);
-
         public TplFunction NextFunction { get; protected set; } = null;
 
         /// <summary>
@@ -42,7 +23,6 @@ namespace TplLib.Functions
                 NextFunction.AddToPipeline(next);
             }
         }
-        #endregion
 
         public List<TplResult> Process()
         {
