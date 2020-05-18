@@ -3,49 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     public class TplBetween : TplFunction
     {
-        private string _targetField;
-        private string _startValue;
-        private string _endValue;
-        private bool _inclusive = false;
+        public string TargetField { get; internal set; }
+        public string StartValue { get; internal set; }
+        public string EndValue { get; internal set; }
+        public bool Inclusive { get; internal set; } = false;
+
+        internal TplBetween() { }
 
         public TplBetween(string targetField, string startVal, string endVal, bool inclusive = false)
         {
-            _targetField = targetField;
-            _startValue = startVal;
-            _endValue = endVal;
-            _inclusive = inclusive;
-        }
-
-        public TplBetween (ParsableString query)
-        {
-            query.GetNext(TokenType.VAR_NAME)
-                .OnSuccess(field => _targetField = field.Value())
-                .OnFailure(_ => _targetField = TplResult.DEFAULT_FIELD)
-
-                .GetNext(TokenType.QUOTE)
-                .OnSuccess(start => _startValue = start.Value())
-                .OnFailure(_ => throw new ArgumentException($"Required argument for start value was missing from between function"))
-
-                .GetNext(TokenType.QUOTE)
-                .OnSuccess(end => _endValue = end.Value())
-                .OnFailure(_ => throw new ArgumentException($"Required argument for end value was missing from between function"))
-
-                .GetNext(TokenType.PARAMETER)
-                .OnSuccess(param =>
-                {
-                    if (param.ParamName.Value() != "inclusive")
-                        throw new ArgumentException($"Between function does not take parameter '{param.ParamName}'");
-
-                    _inclusive = param.ParamValue.Value<bool>();
-                })
-
-                .Source.VerifyAtEnd();
+            TargetField = targetField;
+            StartValue = startVal;
+            EndValue = endVal;
+            Inclusive = inclusive;
         }
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
@@ -55,15 +31,15 @@ namespace TPL_Lib.Functions
 
             for (int i = 0; i < input.Count; i++)
             {
-                var val = input[i].ValueOf(_targetField);
+                var val = input[i].StringValueOf(TargetField);
 
-                if (val.Contains(_startValue))
+                if (val.Contains(StartValue))
                     startIndex = i;
 
-                if (startIndex != -1 && val.Contains(_endValue))
+                if (startIndex != -1 && val.Contains(EndValue))
                 {
                     //We found a start and an end, we need to add all of the values between those to the results
-                    if (!_inclusive)
+                    if (!Inclusive)
                     {
                         for (int j = startIndex + 1; j < i; j++)
                         {

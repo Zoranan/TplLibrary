@@ -4,32 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     public class TplGroup : TplFunction
     {
-        public Regex StartRegex { get; private set; } = null;
-        public Regex EndRegex { get; private set; } = null;
-        public string TargetField { get; private set; } = null;
+        public Regex StartRegex { get; internal set; }
+        public Regex EndRegex { get; internal set; }
+        public string TargetField { get; internal set; }
 
-        public TplGroup(ParsableString query)
-        {
-            query.GetNext(TokenType.VAR_NAME)
-                .OnSuccess(field => TargetField = field.Value())
-                .OnFailure(_ => TargetField = TplResult.DEFAULT_FIELD)
-
-                .GetNext(TokenType.QUOTE)
-                .OnFailure(_ => throw new ArgumentException($"Missing start regex in group function"))
-                .OnSuccess(start => StartRegex = new Regex(start.Value(), RegexOptions.Compiled))
-
-                .GetNext(TokenType.QUOTE)
-                .OnFailure(_ => throw new ArgumentException($"Missing end regex in group function"))
-                .OnSuccess(end => EndRegex = new Regex(end.Value(), RegexOptions.Compiled))
-
-                .Source.VerifyAtEnd();
-        }
+        internal TplGroup() { }
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
@@ -41,7 +26,7 @@ namespace TPL_Lib.Functions
             {
                 if (i.HasField(TargetField))
                 {
-                    var currentValue = i.ValueOf(TargetField);
+                    var currentValue = i.StringValueOf(TargetField);
 
                     //Start our group
                     if (!grouping && StartRegex.IsMatch(currentValue))

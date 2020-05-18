@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29324.140
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPL_Lib", "TPL_Lib\TPL_Lib.csproj", "{74D58308-8CB7-409B-A3A9-B502853117F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TplLib", "TPL_Lib\TplLib.csproj", "{74D58308-8CB7-409B-A3A9-B502853117F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPL_Console_Test", "TPL_Console_Test\TPL_Console_Test.csproj", "{D7FE8B75-7311-45B8-B9A7-894B71AE8795}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TplConsoleTest", "TPL_Console_Test\TplConsoleTest.csproj", "{D7FE8B75-7311-45B8-B9A7-894B71AE8795}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tpl", "Tpl\Tpl.csproj", "{83ACACEB-1115-4DD9-8C04-66416E93CAC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TplParser", "TplParser\TplParser.csproj", "{83827747-8CDF-4CAB-8BE9-2AC66B913D27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TplGui", "TplGui\TplGui.csproj", "{B35AD401-D1B2-4DAF-9B46-C13AF559AB7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{83ACACEB-1115-4DD9-8C04-66416E93CAC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83ACACEB-1115-4DD9-8C04-66416E93CAC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83ACACEB-1115-4DD9-8C04-66416E93CAC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83827747-8CDF-4CAB-8BE9-2AC66B913D27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83827747-8CDF-4CAB-8BE9-2AC66B913D27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83827747-8CDF-4CAB-8BE9-2AC66B913D27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83827747-8CDF-4CAB-8BE9-2AC66B913D27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B35AD401-D1B2-4DAF-9B46-C13AF559AB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B35AD401-D1B2-4DAF-9B46-C13AF559AB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B35AD401-D1B2-4DAF-9B46-C13AF559AB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B35AD401-D1B2-4DAF-9B46-C13AF559AB7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

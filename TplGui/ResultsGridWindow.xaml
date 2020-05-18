@@ -1,0 +1,47 @@
+﻿<Window x:Class="TplGui.ResultsGridWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TplGui"
+        mc:Ignorable="d"
+        Background="{StaticResource PaleBlack}"
+        Title="Results Grid" Height="480" Width="720">
+    <Grid>
+        <DataGrid Name="ResultsGrid"
+                  Margin="5"
+                  Background="Transparent"
+                  Foreground="LightGray"
+                  IsReadOnly="True"
+                  AutoGenerateColumns="False"
+                  RowBackground="Transparent"
+                  FontFamily="Lucida Console"
+                  FontSize="14"
+                  SelectionUnit="CellOrRowHeader">
+
+            <DataGrid.CellStyle>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="Margin" Value="2"/>
+                    <Setter Property="FontFamily" Value="Lucida Console"/>
+                </Style>
+            </DataGrid.CellStyle>
+
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Foreground" Value="LightGray"/>
+                    <Setter Property="Background" Value="{StaticResource NiceBlue}"/>
+                    <Setter Property="Padding" Value="4,4,8,4"/>
+                    <!--<Setter Property="BorderBrush" Value="#a8a8a8"></Setter>
+                    <Setter Property="BorderThickness" Value="2"></Setter>
+                    -->
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Results" Width="780"></DataGridTextColumn>
+            </DataGrid.Columns>
+
+        </DataGrid>
+    </Grid>
+</Window>

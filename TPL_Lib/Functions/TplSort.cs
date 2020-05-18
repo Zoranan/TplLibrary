@@ -4,15 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib.Extensions;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Extensions;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
-    // PIPELINE SYNTAX
-    //
-    // sort (+-)Field1, (+-)Field2, (+-)Field3...
-    //
+    public class TplSortField
+    {
+        public readonly string Name;
+        public readonly bool Descending;
+
+        public TplSortField(string name, bool desc = false)
+        {
+            Name = name;
+            Descending = desc;
+        }
+    }
 
     /// <summary>
     /// Sorts a list of TplResults by one or more of their fields
@@ -20,17 +27,17 @@ namespace TPL_Lib.Functions
     public class TplSort : TplFunction
     {
         #region Fields
-        private List<string> _targetFields = new List<string>() { TplResult.DEFAULT_FIELD };
+        private List<TplSortField> _targetFields = new List<TplSortField>() { new TplSortField(TplResult.DEFAULT_FIELD) };
         #endregion
 
         #region Properties
-        public List<string> TargetFields
+        public List<TplSortField> TargetFields
         {
             get
             {
                 return _targetFields;
             }
-            private set
+            internal set
             {
                 if (value != null)
                 {
@@ -41,16 +48,11 @@ namespace TPL_Lib.Functions
         #endregion
 
         #region Constructors
-        public TplSort (List<string> targetFields=null)
+        internal TplSort() { }
+
+        public TplSort(List<TplSortField> targetFields=null)
         {
             TargetFields = targetFields;
-        }
-
-        public TplSort (ParsableString query)
-        {
-            query.GetNextList(TokenType.VAR_NAME)
-                .OnSuccess(list => TargetFields = list.ResultsList.Select(f => f.Value()).ToList())
-                .Source.VerifyAtEnd();
         }
         #endregion
 
@@ -62,13 +64,15 @@ namespace TPL_Lib.Functions
                 int startPoint = 0;
                 int endPoint = input.Count - 1;
 
-                QuickSort(input, startPoint, endPoint);
+                var sortFields = TargetFields.Any() ? TargetFields : input.GetAllFields().Select(f => new TplSortField(f)).ToList();
+
+                QuickSort(input, startPoint, endPoint, sortFields);
             }
 
             return input;
         }
 
-        private void QuickSort (List<TplResult> input, int startPoint, int endPoint)
+        private void QuickSort (List<TplResult> input, int startPoint, int endPoint, List<TplSortField> sortFields)
         {
             if (startPoint < endPoint)
             {
@@ -86,7 +90,7 @@ namespace TPL_Lib.Functions
                 int i = startPoint;
                 for (int j = startPoint; j < endPoint; j++)
                 {
-                    var comparison = input[j].CompareTo(pivotObject, TargetFields);
+                    var comparison = input[j].CompareTo(pivotObject, sortFields);
                     if (comparison < 0)
                     {
                         input.Swap(i, j);
@@ -95,8 +99,8 @@ namespace TPL_Lib.Functions
                 }
 
                 input.Swap(i, endPoint);
-                QuickSort(input, startPoint, i - 1);
-                QuickSort(input, i + 1, endPoint);
+                QuickSort(input, startPoint, i - 1, sortFields);
+                QuickSort(input, i + 1, endPoint, sortFields);
             }
 
         }

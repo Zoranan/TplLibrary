@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TPL_Lib.Extensions;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Extensions;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     // PIPELINE SYNTAX
     //
@@ -21,10 +21,12 @@ namespace TPL_Lib.Functions
     {
         private ExpressionEV.Expression _condition;
 
-        public TplWhere (ParsableString query)
-        {
-            _condition = new ExpressionEV.Expression(query.GetRemainder().Value());
-        }
+        public TplWhere(string condition) { _condition = new ExpressionEV.Expression(condition); }
+
+        //public TplWhere (ParsableString query)
+        //{
+        //    _condition = new ExpressionEV.Expression(query.GetRemainder().Value());
+        //}
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
@@ -35,7 +37,7 @@ namespace TPL_Lib.Functions
                 //Set the variables in our condition to what we have in this TplResult
                 foreach (var varName in _condition.VarNames)
                 {
-                    var value = input[i].ValueOf(varName);
+                    var value = input[i].StringValueOf(varName);
                     _condition.SetVar(varName, value);
                 }
 

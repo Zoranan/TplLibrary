@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib.Extensions;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Extensions;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     // PIPELINE SYNTAX
     //
@@ -32,11 +32,11 @@ namespace TPL_Lib.Functions
         #endregion
 
         #region Properties
-        public List<string> TargetFields { get; private set; }
+        public List<string> TargetFields { get; internal set; }
         public Regex KeyValueRegex
         {
             get { return _keyValueRegex; }
-            private set
+            internal set
             {
                 var groups = value.GetNamedCaptureGroupNames();
                 if (groups.Contains("key") && groups.Contains("value"))
@@ -48,6 +48,8 @@ namespace TPL_Lib.Functions
         #endregion
 
         #region Constructors
+        internal TplKeyValue() { }
+
         public TplKeyValue (string kvRex, List<string> targetFields = null)
         {
             KeyValueRegex = new Regex(kvRex, RegexOptions.Compiled);
@@ -56,18 +58,18 @@ namespace TPL_Lib.Functions
                 TargetFields = new string[] { TplResult.DEFAULT_FIELD }.ToList();
         }
 
-        public TplKeyValue (ParsableString query)
-        {
-            query.GetNextList(TokenType.VAR_NAME)
-                .OnSuccess(fields => TargetFields = fields.ResultsList.Select(f => f.Value()).ToList())
-                .OnFailure(_ => TargetFields = new List<string>() { TplResult.DEFAULT_FIELD })
+        //public TplKeyValue (ParsableString query)
+        //{
+        //    query.GetNextList(TokenType.VAR_NAME)
+        //        .OnSuccess(fields => TargetFields = fields.ResultsList.Select(f => f.Value()).ToList())
+        //        .OnFailure(_ => TargetFields = new List<string>() { TplResult.DEFAULT_FIELD })
 
-                .GetNext(TokenType.QUOTE)
-                .OnSuccess(kvRegex => KeyValueRegex = new Regex(kvRegex.Value(), RegexOptions.Compiled))
-                .OnFailure(_ => throw new ArgumentException($"The keyvalue function requires a regex as its final argument, in quotes"))
+        //        .GetNext(TokenType.QUOTE)
+        //        .OnSuccess(kvRegex => KeyValueRegex = new Regex(kvRegex.Value(), RegexOptions.Compiled))
+        //        .OnFailure(_ => throw new ArgumentException($"The keyvalue function requires a regex as its final argument, in quotes"))
                 
-                .Source.VerifyAtEnd();
-        }
+        //        .Source.VerifyAtEnd();
+        //}
 
         #endregion
 
@@ -78,7 +80,7 @@ namespace TPL_Lib.Functions
             {
                 foreach (var field in TargetFields)
                 {
-                    var matches = _keyValueRegex.Matches(r.ValueOf(field));
+                    var matches = _keyValueRegex.Matches(r.StringValueOf(field));
 
                     foreach (Match m in matches)
                     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TPL_Lib.Tpl_Parser
+namespace TplLib.Tpl_Parser
 {
     public static class StringExtensions
     {

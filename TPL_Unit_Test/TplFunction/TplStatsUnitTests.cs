@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TPL_Lib.Functions;
+using TPL_Lib.Tpl_Parser;
 
 namespace TPL_Unit_Test.TplFunction
 {
@@ -11,19 +12,19 @@ namespace TPL_Unit_Test.TplFunction
         public void Constructor_Testing()
         {
             //Count
-            var tplStat = new TplStats("count");
+            var tplStat = new TplStats(new ParsableString("stats count"));
             Assert.IsFalse(tplStat._sum, "Sum was true");
             Assert.IsTrue(tplStat._count, "Count was false");
 
             //Count sum
-            tplStat = new TplStats("count sum price");
+            tplStat = new TplStats(new ParsableString("stats count sum price"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
             Assert.IsTrue(tplStat.TargetFields.Contains("price"));
             Assert.IsTrue(tplStat.ByFields == null);
 
-            tplStat = new TplStats("count sum price, tax");
+            tplStat = new TplStats(new ParsableString("stats count sum price, tax"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 2);
@@ -32,21 +33,21 @@ namespace TPL_Unit_Test.TplFunction
             Assert.IsTrue(tplStat.ByFields == null);
 
             //Sum
-            tplStat = new TplStats("sum field1");
+            tplStat = new TplStats(new ParsableString("stats sum field1"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsFalse(tplStat._count, "Count was true");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
             Assert.IsTrue(tplStat.TargetFields.Contains("field1"));
 
             //Sum Count
-            tplStat = new TplStats("sum count price");
+            tplStat = new TplStats(new ParsableString("stats sum count price"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
             Assert.IsTrue(tplStat.TargetFields.Contains("price"));
             Assert.IsTrue(tplStat.ByFields == null);
 
-            tplStat = new TplStats("sum count price, tax");
+            tplStat = new TplStats(new ParsableString("stats sum count price, tax"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 2);
@@ -57,20 +58,20 @@ namespace TPL_Unit_Test.TplFunction
             //Sum not field fail check
             try
             {
-                tplStat = new TplStats("sum");
+                tplStat = new TplStats(new ParsableString("stats sum"));
                 Assert.IsTrue(false, "Constructor allowed sum without field(s)");
             }
             catch { Assert.IsTrue(true); }
             
             //All of the above with by clauses
             //Count
-            tplStat = new TplStats("count by field1");
+            tplStat = new TplStats(new ParsableString("stats count by field1"));
             Assert.IsFalse(tplStat._sum, "Sum was true");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.ByFields.Contains("field1"), "by clause field name did not match expected");
             
             //Count sum
-            tplStat = new TplStats("count sum price by field1 field2");
+            tplStat = new TplStats(new ParsableString("stats count sum price by field1 field2"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
@@ -78,7 +79,7 @@ namespace TPL_Unit_Test.TplFunction
             Assert.IsTrue(tplStat.ByFields.Contains("field1"), "by clause field name did not match expected");
             Assert.IsTrue(tplStat.ByFields.Contains("field2"), "by clause field name did not match expected");
             
-            tplStat = new TplStats("count sum price, tax by field1, field2");
+            tplStat = new TplStats(new ParsableString("stats count sum price, tax by field1, field2"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 2);
@@ -88,7 +89,7 @@ namespace TPL_Unit_Test.TplFunction
             Assert.IsTrue(tplStat.ByFields.Contains("field2"), "by clause field name did not match expected");
 
             //Sum
-            tplStat = new TplStats("sum field1 by day");
+            tplStat = new TplStats(new ParsableString("stats sum field1 by day"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsFalse(tplStat._count, "Count was true");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
@@ -96,7 +97,7 @@ namespace TPL_Unit_Test.TplFunction
             Assert.IsTrue(tplStat.ByFields.Contains("day"), "by clause field name did not match expected");
 
             //Sum Count
-            tplStat = new TplStats("sum count price by store, day");
+            tplStat = new TplStats(new ParsableString("stats sum count price by store, day"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 1);
@@ -105,7 +106,7 @@ namespace TPL_Unit_Test.TplFunction
             Assert.IsTrue(tplStat.ByFields.Contains("day"), "by clause field name did not match expected");
 
 
-            tplStat = new TplStats("sum count price, tax by store day");
+            tplStat = new TplStats (new ParsableString("stats sum count price, tax by store day"));
             Assert.IsTrue(tplStat._sum, "Sum was false");
             Assert.IsTrue(tplStat._count, "Count was false");
             Assert.IsTrue(tplStat.TargetFields.Count == 2);
@@ -117,7 +118,7 @@ namespace TPL_Unit_Test.TplFunction
             //Sum not field fail check
             try
             {
-                tplStat = new TplStats("sum by day");
+                tplStat = new TplStats(new ParsableString("stats sum by day"));
                 Assert.IsTrue(false, "Constructor allowed sum without field(s)");
             }
             catch { Assert.IsTrue(true); }

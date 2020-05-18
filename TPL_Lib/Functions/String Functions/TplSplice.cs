@@ -4,35 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TextFormatterLanguage;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions.String_Functions
+namespace TplLib.Functions.String_Functions
 {
     public class TplSplice : TplFunction
     {
-        private Splicer _splicer;
-        public string TargetField { get; private set; } = TplResult.DEFAULT_FIELD;
-        public string AsField { get; private set; }
+        private CompiledFormatter _splicer;
+        public string TargetField { get; internal set; } = TplResult.DEFAULT_FIELD;
+        public string AsField { get; internal set; }
 
-        public TplSplice(ParsableString query)
-        {
-            query.GetNext(TokenType.VAR_NAME)
-                .OnSuccess(field => TargetField = field.Value())
-
-                .GetNext(TokenType.QUOTE)
-                .OnSuccess(splice => _splicer = new Splicer(splice.Value()))
-                .OnFailure(_ => throw new ArgumentException($"Required argument for splice format is missing"))
-
-                .GetNext("as")
-                .OnSuccess(_as =>
-                {
-                    return _as.GetNext(TokenType.VAR_NAME)
-                    .OnSuccess(asField => AsField = asField.Value());
-                })
-                .OnFailure(_ => AsField = TargetField)
-
-                .Source.VerifyAtEnd();
-        }
+        internal TplSplice(string splice) { _splicer = new CompiledFormatter(splice); }
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
@@ -42,7 +24,7 @@ namespace TPL_Lib.Functions.String_Functions
             {
                 if (r.HasField(TargetField))
                 {
-                    r.AddOrUpdateField(AsField, _splicer.Format(r.ValueOf(TargetField)));
+                    r.AddOrUpdateField(AsField, _splicer.Format(r.StringValueOf(TargetField)));
                 }
             }
 

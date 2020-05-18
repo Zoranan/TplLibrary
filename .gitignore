@@ -338,3 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/TPL_Lib/Tpl_Parser/PreProcessor.cs

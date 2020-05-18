@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
 
     // PIPELINE SYNTAX
@@ -20,23 +20,25 @@ namespace TPL_Lib.Functions
     /// </summary>
     public class TplEval : TplFunction
     {
-        private string _newFieldName;
+        public string NewFieldName { get; internal set; }
         private ExpressionEV.Expression _evaluation;
 
-        public TplEval(ParsableString query)
-        {
-            query.GetNext(TokenType.VAR_NAME, false)
-                .OnFailure(_ => throw new ArgumentException("You must assign the value of the Eval function to a field"))
-                .OnSuccess(field => _newFieldName = field.Value())
+        internal TplEval(string expression) { _evaluation = new ExpressionEV.Expression(expression); }
+
+        //public TplEval(ParsableString query)
+        //{
+        //    query.GetNext(TokenType.VAR_NAME, false)
+        //        .OnFailure(_ => throw new ArgumentException("You must assign the value of the Eval function to a field"))
+        //        .OnSuccess(field => _newFieldName = field.Value())
                 
-                .GetNext("=")
+        //        .GetNext("=")
                 
-                .OnFailure(_ => throw new ArgumentException($"Expected '=' after the field name '{_newFieldName}'"))
-                .OnSuccess(eval =>
-                {
-                    _evaluation = new ExpressionEV.Expression(eval.Source.GetRemainder().Value());
-                });
-        }
+        //        .OnFailure(_ => throw new ArgumentException($"Expected '=' after the field name '{_newFieldName}'"))
+        //        .OnSuccess(eval =>
+        //        {
+        //            _evaluation = new ExpressionEV.Expression(eval.Source.GetRemainder().Value());
+        //        });
+        //}
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
@@ -44,10 +46,10 @@ namespace TPL_Lib.Functions
             {
                 foreach (var fn in _evaluation.VarNames)
                 {
-                    _evaluation.SetVar(fn, r.ValueOf(fn));
+                    _evaluation.SetVar(fn, r.StringValueOf(fn));
                 }
 
-                r.AddOrUpdateField(_newFieldName, _evaluation.EvalAsString());
+                r.AddOrUpdateField(NewFieldName, _evaluation.EvalAsString());
             }
 
             return input;

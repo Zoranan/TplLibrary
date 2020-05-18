@@ -4,77 +4,41 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib.Extensions;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Extensions;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     public class TplStats : TplFunction
     {
-        public bool _count;
-        public bool _sum;
-        public bool _avg;
+        public bool Count { get; internal set; } = false;
+        public bool Sum { get; internal set; } = false;
+        public bool Avg { get; internal set; } = false;
 
-        public List<string> TargetFields { get; private set; }
-        public List<string> ByFields { get; private set; }
+        public List<string> TargetFields { get; internal set; }
+        public List<string> ByFields { get; internal set; }
 
         private TplSort _sorter;
 
         #region Constructor
+        internal TplStats() { }
         public TplStats(bool count, bool sum = false, bool avg = false, List<string> sumFields = null, List<string> byFields = null)
         {
-            _count = count;
-            _sum = sum;
-            _avg = avg;
+            Count = count;
+            Sum = sum;
+            Avg = avg;
             TargetFields = sumFields;
             ByFields = byFields;
-            _sorter = new TplSort(ByFields);
-        }
-
-        public TplStats(ParsableString query)
-        {
-            query.GetNextList(TokenType.WORD)
-                .OnSuccess(actions =>
-                {
-                    foreach (var a in actions.ResultsList)
-                        switch (a.Value().ToLower())
-                        {
-                            case "count":
-                                _count = true;
-                                break;
-                            case "sum":
-                                _sum = true;
-                                break;
-                            case "avg":
-                                _avg = true;
-                                break;
-                            default:
-                                throw new ArgumentException($"Invalid stat type {a.Value()}. Expected 'count', 'sum',  and/or 'avg'");
-                        }
-                })
-                .OnFailure(_ => throw new ArgumentException("Must specify at least one stat type for the stats function. 'count', 'sum', and/or 'avg'"))
-                
-                .GetNextList(TokenType.VAR_NAME)
-                .OnSuccess(fields => TargetFields = fields.ResultsList.Select(f => f.Value()).ToList())
-                .OnFailure(_ => TargetFields = new List<string>() { TplResult.DEFAULT_FIELD })
-                
-                .GetNext("by")
-                .OnSuccess(by =>
-                {
-                    return by.GetNext(TokenType.LIST)
-                    .AssertIsListType(TokenType.VAR_NAME)
-                    .OnSuccess(fields => ByFields = fields.ResultsList.Select(f => f.Value()).ToList())
-                    .OnFailure(_ => throw new ArgumentException($"Expected a list of fields to group stats by in stats function"));
-                })
-                .Source.VerifyAtEnd();
-
-            _sorter = new TplSort(ByFields);
+            _sorter = new TplSort(ByFields.Select(f => new TplSortField(f)).ToList());
         }
         #endregion
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
             var results = new List<TplResult>();
+
+            if (_sorter == null)
+                _sorter = new TplSort(ByFields.Select(f => new TplSortField(f)).ToList());
 
             if (input.Count > 0)
             {
@@ -84,10 +48,10 @@ namespace TPL_Lib.Functions
                 {
                     var sums = new double[TargetFields.Count];
 
-                    if (_count)
+                    if (Count)
                         input[0].AddOrUpdateField("Count", input.Count.ToString());
 
-                    if (_sum || _avg)
+                    if (Sum || Avg)
                     {
                         //Populate index 0 of sum array
                         for (int j = 0; j < sums.Length; j++)
@@ -114,16 +78,16 @@ namespace TPL_Lib.Functions
                         for (int j = 0; j < sums.Length; j++)
                         {
                             var fieldName = TargetFields[j];
-                            var formatString = input[0].ValueOf(TargetFields[j]);
+                            var formatString = input[0].StringValueOf(TargetFields[j]);
 
-                            if (_sum)
+                            if (Sum)
                             {
                                 var value = sums[j].FormatLikeNumber(formatString);
 
                                 input[0].AddOrUpdateField("Sum_of_" + fieldName, value);
                             }
 
-                            if (_avg)
+                            if (Avg)
                             {
                                 var value = (sums[j] / resultsToAvgBy).FormatLikeNumber(formatString);
 
@@ -166,16 +130,16 @@ namespace TPL_Lib.Functions
                             for (int j = 0; j < sums.Length; j++)
                             {
                                 var fieldName = TargetFields[j];
-                                var formatString = currentCombo.ValueOf(TargetFields[j]);
+                                var formatString = currentCombo.StringValueOf(TargetFields[j]);
 
-                                if (_sum)
+                                if (Sum)
                                 {
                                     var value = sums[j].FormatLikeNumber(formatString);
 
                                     currentCombo.AddOrUpdateField("Sum_of_" + fieldName, value);
                                 }
 
-                                if (_avg)
+                                if (Avg)
                                 {
                                     var value = (sums[j] / currentCount).FormatLikeNumber(formatString);
 
@@ -185,7 +149,7 @@ namespace TPL_Lib.Functions
                                 sums[j] = 0;
                             }
 
-                            if (_count)
+                            if (Count)
                             {
                                 currentCombo.AddOrUpdateField("Count", currentCount.ToString());
                             }
@@ -207,22 +171,22 @@ namespace TPL_Lib.Functions
                         currentCount++;
                     }
 
-                    if (_count)
+                    if (Count)
                         currentCombo.AddOrUpdateField("Count", currentCount.ToString());
 
                     for (int j = 0; j < sums.Length; j++)
                     {
                         var fieldName = TargetFields[j];
-                        var formatString = currentCombo.ValueOf(TargetFields[j]);
+                        var formatString = currentCombo.StringValueOf(TargetFields[j]);
 
-                        if (_sum)
+                        if (Sum)
                         {
                             var value = sums[j].FormatLikeNumber(formatString);
 
                             currentCombo.AddOrUpdateField("Sum_of_" + fieldName, value);
                         }
 
-                        if (_avg)
+                        if (Avg)
                         {
                             var value = (sums[j] / divBy[j]).FormatLikeNumber(formatString);
 
@@ -244,12 +208,12 @@ namespace TPL_Lib.Functions
 
             foreach (var f in TargetFields)
             {
-                if (_sum)
+                if (Sum)
                     selectFields.Add("Sum_of_" + f);
-                if (_avg)
+                if (Avg)
                     selectFields.Add("Avg_of_" + f);
             }
-            if (_count)
+            if (Count)
                 selectFields.Add("Count");
 
             var select = new TplSelect(selectFields);

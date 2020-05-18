@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using TPL_Lib.Extensions;
 using TPL_Lib.Functions.String_Functions;
+using TPL_Lib.Tpl_Parser;
 
 namespace TPL_Unit_Test
 {
@@ -59,7 +60,7 @@ namespace TPL_Unit_Test
         [TestMethod]
         public void Concat_Test()
         {
-            var con = new TplStringConcat("\"h\" f1 \" 3\" \"  :  \" f2 f3 \" something \" f1 as Concated");
+            var con = new TplStringConcat(new ParsableString("\"h\" f1 \" 3\" \"  :  \" f2 f3 \" something \" f1 as Concated"));
 
         }
     }

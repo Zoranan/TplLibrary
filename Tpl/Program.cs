@@ -2,7 +2,7 @@
 using CommandLine.Text;
 using System;
 using System.Collections.Generic;
-using TPL_Lib;
+using TplLib;
 
 namespace Tpl
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace TPL_Lib.Extensions
+namespace TplLib.Extensions
 {
 
     public static class ExtensionMethods
@@ -13,18 +13,6 @@ namespace TPL_Lib.Extensions
         public static readonly Regex _moneyReplacementRegex = new Regex(@"[$,]", RegexOptions.Compiled);
         public static readonly Regex _moneyStringRegex = new Regex(@"(^\$?(\d{1,3})(,?\d{3})*)?(\.\d+)?$", RegexOptions.Compiled);
         //public static readonly Regex _filePathPartsRegex = new Regex(@"[$,]", RegexOptions.Compiled);
-
-        public static List<TplResult> ToTplResults (this List<string> input)
-        {
-            var output = new List<TplResult>(input.Count);
-
-            foreach (var s in input)
-            {
-                output.Add(new TplResult(s));
-            }
-
-            return output;
-        }
 
 
         #region Regex Operations
@@ -104,40 +92,40 @@ namespace TPL_Lib.Extensions
         }
 
         //Comparing matches
-        public static bool Contains(this Match left, Match right)
-        {
-            return right.Index >= left.Index && (right.Index + right.Length) <= (left.Index + left.Length);
-        }
+        //public static bool Contains(this Match left, Match right)
+        //{
+        //    return right.Index >= left.Index && (right.Index + right.Length) <= (left.Index + left.Length);
+        //}
 
-        public static bool Intersects(this Match left, Match right)
-        {
-            return (right.Index + right.Length) >= left.Index && right.Index <= (left.Index + left.Length);
-        }
+        //public static bool Intersects(this Match left, Match right)
+        //{
+        //    return (right.Index + right.Length) >= left.Index && right.Index <= (left.Index + left.Length);
+        //}
 
-        public static bool StartsBefore(this Match left, Match right)
-        {
-            return left.Index <= right.Index;
-        }
+        //public static bool StartsBefore(this Match left, Match right)
+        //{
+        //    return left.Index <= right.Index;
+        //}
 
-        public static bool StartsAfter(this Match left, Match right)
-        {
-            return right.Index >= (left.Index + left.Length);
-        }
+        //public static bool StartsAfter(this Match left, Match right)
+        //{
+        //    return right.Index >= (left.Index + left.Length);
+        //}
 
-        public static bool IsBefore(this Match left, Match right)
-        {
-            return (left.Index + left.Length) <= right.Index;
-        }
+        //public static bool IsBefore(this Match left, Match right)
+        //{
+        //    return (left.Index + left.Length) <= right.Index;
+        //}
 
-        public static bool IsAfter(this Match left, Match right)
-        {
-            return left.StartsAfter(right);
-        }
+        //public static bool IsAfter(this Match left, Match right)
+        //{
+        //    return left.StartsAfter(right);
+        //}
         #endregion
 
         #region Array Operations
 
-        public static void Swap<T>(this List<T> list, int index1, int index2)
+        public static void Swap<T>(this IList<T> list, int index1, int index2)
         {
             var temp = list[index2];
             list[index2] = list[index1];
@@ -147,11 +135,11 @@ namespace TPL_Lib.Extensions
         #endregion
 
         #region String Operations
-        public static int ContainsCount (this string s, string sub)
-        {
-            var searchReg = new Regex(sub);
-            return searchReg.Matches(s).Count;
-        }
+        //public static int ContainsCount (this string s, string sub)
+        //{
+        //    var searchReg = new Regex(sub);
+        //    return searchReg.Matches(s).Count;
+        //}
 
         public static double ToDouble(this string s)
         {
@@ -190,14 +178,14 @@ namespace TPL_Lib.Extensions
 
         #region Number to string conversion
 
-        public static string FormatLikeNumber(this string orig, string formatString)
-        {
-            if (double.TryParse(orig, out double result))
-                return result.FormatLikeNumber(formatString);
+        //public static string FormatLikeNumber(this string orig, string formatString)
+        //{
+        //    if (double.TryParse(orig, out double result))
+        //        return result.FormatLikeNumber(formatString);
 
-            else
-                return orig;
-        }
+        //    else
+        //        return orig;
+        //}
 
         public static string FormatLikeNumber(this double dbl, string formatString)
         {
@@ -222,8 +210,13 @@ namespace TPL_Lib.Extensions
 
         #endregion
 
-        #region File Path Conversion
-
-        #endregion
+        public static List<string> GetAllFields(this IEnumerable<TplResult> resultSet)
+        {
+            return resultSet
+                .SelectMany(r => r.Fields.Keys)
+                .GroupBy(f => f)
+                .Select(f => f.Key)
+                .ToList();
+        }
     }
 }

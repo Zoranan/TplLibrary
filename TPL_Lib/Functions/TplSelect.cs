@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TPL_Lib.Tpl_Parser;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     // PIPELINE SYNTAX
     //
@@ -18,23 +18,25 @@ namespace TPL_Lib.Functions
     /// </summary>
     public class TplSelect : TplFunction
     {
-        private List<string> _selectedFields;
+        public List<string> SelectedFields { get; internal set; }
 
-        public bool RemoveEntriesWithNullValues { get; set; } = true;
+        public bool RemoveEntriesWithNullValues { get; internal set; } = true;
 
         #region Constructors
+        internal TplSelect() { }
+
         public TplSelect (List<string> fields)
         {
-            _selectedFields = fields;
+            SelectedFields = fields;
         }
 
-        public TplSelect (ParsableString query)
-        {
-            query.GetNextList(TokenType.VAR_NAME)
-                .OnSuccess(fieldList => _selectedFields = fieldList.ResultsList.Select(f => f.Value()).ToList())
-                .OnFailure(_ => throw new ArgumentException($"Select function requires one or more fields to be specified for selection"))
-                .Source.VerifyAtEnd();
-        }
+        //public TplSelect (ParsableString query)
+        //{
+        //    query.GetNextList(TokenType.VAR_NAME)
+        //        .OnSuccess(fieldList => _selectedFields = fieldList.ResultsList.Select(f => f.Value()).ToList())
+        //        .OnFailure(_ => throw new ArgumentException($"Select function requires one or more fields to be specified for selection"))
+        //        .Source.VerifyAtEnd();
+        //}
         #endregion
 
         #region Processing
@@ -48,7 +50,7 @@ namespace TPL_Lib.Functions
                 for (int i = 0; i < r.Count; i++)
                 {
                     string k = r.Fields.Keys.ElementAt(i);
-                    if (!_selectedFields.Contains(k))
+                    if (!SelectedFields.Contains(k))
                     {
                         if (r.RemoveField(k))
                             i--;
@@ -58,7 +60,7 @@ namespace TPL_Lib.Functions
                 //Remove empty results
                 bool containsAllSelectedFields = true;
                 bool containsOneSelectedField = false;
-                foreach (var f in _selectedFields)
+                foreach (var f in SelectedFields)
                 {
                     containsAllSelectedFields &= r.HasField(f);
                     containsOneSelectedField |= r.HasField(f);

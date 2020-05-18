@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using TPL_Lib.Extensions;
+using TplLib.Extensions;
 using System.Threading.Tasks;
+using TplLib.Functions;
 
-namespace TPL_Lib
+namespace TplLib
 {
     /// <summary>
     /// Represents one processed result from a TplQuery
@@ -19,40 +20,21 @@ namespace TPL_Lib
         public static readonly string[] READONLY_FIELDS = { "Source", "Length" };
         #endregion
 
-        private Dictionary<string, string> _fields = new Dictionary<string, string>();
+        private readonly Dictionary<string, TplVariable> _fields = new Dictionary<string, TplVariable>();
 
         #region Properties
-        public IReadOnlyDictionary<string, string> Fields
-        {
-            get
-            {
-                var d = new Dictionary<string, string>();
-
-                foreach (var s in SelectedFields)
-                {
-                    if (_fields.ContainsKey(s))
-                        d.Add(s, _fields[s]);
-                }
-
-                return d;
-            }
-        }
-        public List<string> SelectedFields { get; private set; } = new List<string>();
-        public int Count {get { return Fields.Count; } }
+        public IReadOnlyDictionary<string, TplVariable> Fields { get => _fields; }
+        public int Count {get => Fields.Count; }
         #endregion
 
         #region Constructors
         public TplResult(string message, string src = null)
         {
-            _fields.Add(DEFAULT_FIELD, message);
-            SelectedFields.Add(DEFAULT_FIELD);
-            _fields.Add("Length", message.Length.ToString());
-            //SelectedFields.Add("Length");
+            _fields.Add(DEFAULT_FIELD, new TplVariable(message));
 
             if (src != null)
             {
-                _fields.Add("Source", src);
-                //SelectedFields.Add("Source");
+                _fields.Add("Source", new TplVariable(src));
             }                
         }
         #endregion
@@ -70,17 +52,17 @@ namespace TPL_Lib
 
             foreach (var k in keys)
             {
-                isMatch &= ValueOf(k) == right.ValueOf(k);
+                isMatch &= StringValueOf(k) == right.StringValueOf(k);
             }
 
             return isMatch;
         }
 
-        public int CompareTo(TplResult otherResult, List<string> targetFields=null)
+        public int CompareTo(TplResult otherResult, List<TplSortField> targetFields=null)
         {
             if (targetFields == null)
             {
-                targetFields = Fields.Keys.ToList();
+                targetFields = Fields.Keys.Select(f => new TplSortField(f)).ToList();
             }
 
             for (int i = 0; i < targetFields.Count; i++)
@@ -89,19 +71,14 @@ namespace TPL_Lib
                 int sortDirectionMod = 1;
 
                 //Get sort direction
-                if (sortField[0] == '+')
-                {
-                    sortField = sortField.Substring(1);
-                }
-                else if (sortField[0] == '-')
+                if (sortField.Descending)
                 {
                     sortDirectionMod = -1; //Negate the output of string comparison if we want descending order
-                    sortField = sortField.Substring(1);
                 }
 
                 //Begin comparison with the current field
-                var left = ValueOf(sortField);
-                var right = otherResult.ValueOf(sortField);
+                var left = StringValueOf(sortField.Name);
+                var right = otherResult.StringValueOf(sortField.Name);
 
                 //Check for number values
                 if (left != right && (left.Length > 0 || right.Length > 0))
@@ -126,7 +103,7 @@ namespace TPL_Lib
         #region Field Manipulation and Information
         public double NumericValueOf (string key)
         {
-            string sValue;
+            TplVariable sValue;
             try
             {
                 sValue = Fields[key];
@@ -136,7 +113,7 @@ namespace TPL_Lib
                 return 0;
             }
 
-            return sValue.ToDouble();
+            return sValue.NumberValue();
 
         }
 
@@ -154,11 +131,11 @@ namespace TPL_Lib
             }
         }
 
-        public string ValueOf(string key)
+        public string StringValueOf (string key)
         {
             try
             {
-                return _fields[key];
+                return _fields[key].StringValue();
             }
             catch (KeyNotFoundException)
             {
@@ -166,15 +143,14 @@ namespace TPL_Lib
             }
         }
 
-        public bool AddField(string key, string value)
+        public bool AddField(string key, IComparable value)
         {
             if (REQUIRED_FIELDS.Contains(key))
                 throw new InvalidOperationException(key + " is reserved as readonly");
 
             try
             {
-                _fields.Add(key, value);
-                SelectedFields.Add(key);
+                _fields.Add(key, new TplVariable(value));
                 return true;
             }
             catch (ArgumentException)
@@ -183,22 +159,18 @@ namespace TPL_Lib
             }
         }
 
-        public void AddOrUpdateField(string key, string value)
+        public void AddOrUpdateField(string key, IComparable value)
         {
             if (READONLY_FIELDS.Contains(key))
                 throw new InvalidOperationException(key + " is reserved as readonly");
 
-            else if (key == DEFAULT_FIELD)
-                _fields["Length"] = value.Length.ToString();
-
             try
             {
-                _fields.Add(key, value);
-                SelectedFields.Add(key);
+                _fields[key].Value = value;
             }
-            catch (ArgumentException)
+            catch (KeyNotFoundException)
             {
-                _fields[key] = value;
+                _fields.Add(key, new TplVariable(value));
             }
         }
 
@@ -219,7 +191,6 @@ namespace TPL_Lib
                 }
             }
 
-            success |= SelectedFields.Remove(key);
             return success;
         }
 
@@ -239,7 +210,7 @@ namespace TPL_Lib
             {
                 output.Append(kv.Key);
                 output.Append(" = ");
-                output.AppendLine(kv.Value);
+                output.AppendLine(kv.Value.StringValue());
             }
             return output.ToString();
         }
@@ -255,7 +226,7 @@ namespace TPL_Lib
 
                 foreach (var kv in fields.Skip(1))
                 {
-                    output.AppendLine(Environment.NewLine + kv.Value);
+                    output.Append(Environment.NewLine + kv.Value);
                 }
             }
             
@@ -264,5 +235,73 @@ namespace TPL_Lib
 
         #endregion
 
+
+        public class TplVariable
+        {
+            public IComparable Value { get; internal set; }
+            public TplVariable (IComparable value) { Value = value; }
+
+            #region Getting Value As
+            internal string StringValue()
+            {
+                if (Value is string str) return str;
+                else return Value.ToString();
+            }
+
+            internal double NumberValue()
+            {
+                if (Value is double dbl) return dbl;
+                else if (Value is bool b) return b ? 1 : 0;
+                else
+                {
+                    try { return Convert.ToDouble(Value); }
+                    catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                    { return 0; }
+                }
+            }
+
+            internal bool BoolValue()
+            {
+                if (Value is bool b) return b;
+                else if (Value is double dbl) return dbl != 0;
+                else return string.IsNullOrEmpty(Value as string);
+            }
+            #endregion
+
+            #region Convert Stored Value Type
+            internal void CastString()
+            {
+                Value = StringValue();
+            }
+
+            internal void CastNumber()
+            {
+                Value = NumberValue();
+            }
+
+            internal void CastBool()
+            {
+                Value = BoolValue();
+            }
+
+            internal void CastAutoType()
+            {
+                try { Value = Convert.ToBoolean(Value); return; }
+                catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                { /*Convert Failed. Lets try a double*/ }
+
+                try { Value = Convert.ToDouble(Value); return; }
+                catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                { /*Convert Failed. Set it to a string*/ }
+
+                CastString();
+            }
+            #endregion
+
+            public override string ToString()
+            {
+                return Value.ToString();
+            }
+        }
     }
 }

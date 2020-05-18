@@ -1,7 +1,4 @@
-﻿using TPL_Lib;
-using TPL_Lib.Extensions;
-using TPL_Lib.Functions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,9 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using TPL_Lib.Tpl_Parser;
+using TplLib;
+using TplLib.Functions;
 
-namespace TPL_Console_Test
+namespace TplConsoleTest
 {
     class Program
     {
@@ -22,27 +20,37 @@ namespace TPL_Console_Test
             while (!exit)
             {
                 var input = File.ReadAllLines("in.txt").ToList();
-                Console.Write("Search: ");
+                //Console.Write("Search: ");
                 var query = Console.ReadLine();
+                //TplFunction tpl = Tpl.Create(@"replace '' '' -as -new");
+                //try
+                //{
+                //    tpl = Tpl.FromQuery(query);
+                //    var results = tpl.Process(input.Select(i => new TplResult(i, "in.txt")).ToList());
 
-                var sw = new Stopwatch();
-                sw.Restart();
-                var search = new TplSearch(query);
-                sw.Stop();
-                var ConstructionTime = sw.ElapsedMilliseconds;
+                //    foreach (var r in results)
+                //        Console.WriteLine(r.PrintValuesOnly());
+                //}
+                //catch (AggregateException e)
+                //{
+                //    Console.WriteLine(e.Message);
 
-                sw.Restart();
-                var results = search.Process(input.ToTplResults());
-                sw.Stop();
-                var ExecTime = sw.ElapsedMilliseconds;
+                //    foreach (var ex in e.InnerExceptions)
+                //        Console.WriteLine("\t" + e.Message);
+                //}
+                //catch (Exception e)
+                //{
+                //    Console.WriteLine(e.Message);
+                //}
 
-                foreach (var r in results)
-                {
-                    Console.WriteLine(r);
-                }
 
-                Console.WriteLine("Query Construction took: " + ConstructionTime);
-                Console.WriteLine("Execution took: " + ExecTime);
+                //foreach (var r in results)
+                //{
+                //    Console.WriteLine(r);
+                //}
+
+                //Console.WriteLine("Query Construction took: " + ConstructionTime);
+                //Console.WriteLine("Execution took: " + ExecTime);
 
                 Console.Write("Exit? (y/n): ");
                 var yn = Console.ReadKey().KeyChar;

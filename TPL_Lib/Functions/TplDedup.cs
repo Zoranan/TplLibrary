@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using TPL_Lib;
-using TPL_Lib.Functions;
-using TPL_Lib.Tpl_Parser;
+using TplLib;
+using TplLib.Extensions;
+using TplLib.Functions;
+using TplLib.Tpl_Parser;
 
-namespace TPL_Lib.Functions
+namespace TplLib.Functions
 {
     // PIPELINE SYNTAX
     //
@@ -27,14 +28,16 @@ namespace TPL_Lib.Functions
         /// <summary>
         /// Determines how duplicates are detected; consecutively or through the whole result set
         /// </summary>
-        private DedupMode Mode { get; set; } = DedupMode.All;
+        internal DedupMode Mode { get; set; } = DedupMode.All;
         /// <summary>
         /// Determines which duplicate item is kept, the first or last instance
         /// </summary>
-        private DedupSort SortMode { get; set; } = DedupSort.Last;
+        internal DedupSort SortMode { get; set; } = DedupSort.Last;
         #endregion
 
         #region Constructors
+
+        internal TplDedup() { }
 
         public TplDedup(List<string> targetFields, DedupMode mode = DedupMode.All, DedupSort sortMode = DedupSort.Last)
         {
@@ -42,38 +45,6 @@ namespace TPL_Lib.Functions
             Mode = mode;
             SortMode = sortMode;
         }
-
-
-        public TplDedup (ParsableString query)
-        {
-            query.GetNextList(TokenType.VAR_NAME)
-                .OnSuccess(fields => TargetFields = fields.ResultsList.Select(r => r.Value()).ToList())
-                .OnFailure(_ => TargetFields = new List<string>() { TplResult.DEFAULT_FIELD })
-
-                .WhileGetNext(TokenType.PARAMETER, param =>
-                {
-                    switch (param.ParamName.Value().ToLower())
-                    {
-                        case "consecutive":
-                            Mode = param.ParamValue.Value<bool>() ? DedupMode.Consecutive : DedupMode.All;
-                            break;
-
-                        case "sort":
-
-                            if (Enum.TryParse(param.ParamValue.Value(), out DedupSort dedupSort))
-                                SortMode = dedupSort;
-
-                            else
-                                throw new ArgumentException($"Invalid value for parameter 'sort' in dedup function. Expected 'first', or 'last'");
-                            break;
-
-                        default:
-                            throw new ArgumentException($"Invalid parameter '{param.ParamName}' in dedup function");
-                    }
-                })
-                .Source.VerifyAtEnd();
-        }
-
         #endregion
 
         #region Processing
@@ -86,10 +57,7 @@ namespace TPL_Lib.Functions
             {
                 results.Add(inputs[0]);
 
-                if (TargetFields == null)
-                {
-                    TargetFields = inputs[0].Fields.Keys.ToList();
-                }
+                var targetFields = TargetFields == null || !TargetFields.Any() ? inputs.GetAllFields() : TargetFields;
 
                 if (Mode == DedupMode.All)
                 {
@@ -102,7 +70,7 @@ namespace TPL_Lib.Functions
                         {
                             var result = results[i];
 
-                            alreadyAdded |= result.Matches(input, TargetFields);
+                            alreadyAdded |= result.Matches(input, targetFields);
 
                             if (alreadyAdded)
                             {
@@ -126,7 +94,7 @@ namespace TPL_Lib.Functions
                 {
                     foreach (var result in inputs)
                     {
-                        if (!result.Matches(results.Last(), TargetFields))
+                        if (!result.Matches(results.Last(), targetFields))
                         {
                             results.Add(result);
                         }
