@@ -144,13 +144,13 @@ namespace TplLib
                                 var rex = new TplReplace()
                                 {
                                     TargetFields = GetOptionalVariableList(funcNode[1], TplResult.DEFAULT_FIELD),
-                                    Replace = funcNode[3].FindTokenAndGetText(),
+                                    Replace = funcNode[3].FindTokenAndGetValue<string>(),
                                     AsField = GetNamedArgumentValue<string>(funcNode[4], "as", null),
                                     TargetGroup = GetNamedArgumentValue<string>(funcNode[4], "group", null),
                                     CaseSensitive = GetNamedArgumentValue<bool>(funcNode[4], "case", false),
-                                    RegexMode = GetNamedArgumentValue<bool>(funcNode[4], "as", false),
+                                    RegexMode = GetNamedArgumentValue<bool>(funcNode[4], "rex", false),
                                 };
-                                rex.Find = funcNode[2].FindTokenAndGetText();
+                                rex.Find = funcNode[2].FindTokenAndGetValue<string>();
                                 currentFunction = rex;
                             }
                             break;
@@ -288,7 +288,12 @@ namespace TplLib
                 {
                     var actualArgName = arg.ChildNodes[0].FindToken().ValueString;
 
-                    if (arg.ChildNodes.Count > 1)
+                    if (typeof(T) == typeof(Regex))
+                    {
+                        value = (T)(object)GetTokenAsRegex(arg.ChildNodes[1].FindToken());
+                        found = true;
+                    }
+                    else if (arg.ChildNodes.Count > 1)
                     {
                         var actualArgValue = arg.ChildNodes[1].FindToken().ValueString;
 
@@ -305,10 +310,6 @@ namespace TplLib
                         value = (T)(object)true;
                         found = true;
                     }
-                    else if (typeof(T) == typeof(Regex))
-                    {
-                        value = (T)(object)GetTokenAsRegex(arg.ChildNodes[1].FindToken());
-                    }
                     else
                     {
                         throw arg.GetException($"Expected a value of type {typeof(T)} for argument '{actualArgName}'");
@@ -321,9 +322,8 @@ namespace TplLib
             return found;
         }
 
-        private static void ValidateArgumentList(ParseTreeNode functionNode, params string[] validArgs)
+        private static void ValidateArgumentList(ParseTreeNode args, params string[] validArgs)
         {
-            var args = functionNode.ChildNodes.FirstOrDefault(n => n.ToString() == "ARGUMENT_LIST");
             if (args != null)
             {
                 var dups = args.ChildNodes
@@ -333,7 +333,7 @@ namespace TplLib
                     .FirstOrDefault();
 
                 if (dups != null)
-                    throw functionNode.GetException($"Argument {dups.Name} was specified more than once in function {functionNode.FindToken().ValueString}");
+                    throw args.GetException($"Argument {dups.Name} was specified more than once in function {args.FindToken().ValueString}");
 
                 var invalidArgs = args.ChildNodes
                     .Select(a => a.FindToken())
