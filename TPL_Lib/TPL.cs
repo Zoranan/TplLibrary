@@ -108,12 +108,34 @@ namespace TplLib
                                 );
                             break;
 
-                        //case "stats":
+                        case "stats":
+                            {
+                                ValidateArgumentList(funcNode[3], "count", "sum", "avg");
+                                if (!funcNode[3].ChildNodes.Any())
+                                    throw funcNode[0].GetException("Expected 1 or more of the following arguments: 'count', 'sum', or 'avg' in 'stats' function");
 
-                        //    break;
+                                List<string> byFields;
+                                if (funcNode[2].ChildNodes.Any())
+                                {
+                                    byFields = GetOptionalVariableList(funcNode[2].ChildNodes[1]);
+                                    if (!byFields.Any())
+                                        throw funcNode[2].GetException("Expected 1 or more variables in 'stats' function after 'by'");
+                                }
+                                else byFields = new List<string>(0);
+
+                                currentFunction = new TplStats()
+                                {
+                                    TargetFields = GetOptionalVariableList(funcNode[1], TplResult.DEFAULT_FIELD),
+                                    ByFields = byFields,
+                                    Avg = GetNamedArgumentValue(funcNode[3], "avg", false),
+                                    Count = GetNamedArgumentValue(funcNode[3], "count", false),
+                                    Sum = GetNamedArgumentValue(funcNode[3], "sum", false),
+                                };
+                            }
+                            break;
 
                         //case "where":
-                            
+
                         //    break;
 
                         case "tolower":

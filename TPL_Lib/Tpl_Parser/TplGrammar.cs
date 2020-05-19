@@ -62,6 +62,7 @@ namespace TplParser
             var NAMED_ARGUMENT = new NonTerminal("ARGUMENT");
             var SWITCH_ARGUMENT = new NonTerminal("SWITCH_ARGUMENT");
             var LIST_OF_ARGUMENTS = new NonTerminal("ARGUMENT_LIST");
+            var OPTIONAL_BY_FIELDS = new NonTerminal("BY_FIELDS_LIST");
 
             var EXPRESSION_LVL0 = new NonTerminal("EXPRESSION LVL 0");
             var EXPRESSION_LVL1 = new NonTerminal("EXPRESSION LVL 1");
@@ -99,6 +100,10 @@ namespace TplParser
                 | boolean
                 | integer
                 | _decimal
+                ;
+
+            OPTIONAL_BY_FIELDS.Rule = "by" + LIST_OF_VARIABLES
+                | Empty
                 ;
 
             EXPRESSION_LVL0.Rule = EXPRESSION_LVL1
@@ -158,7 +163,7 @@ namespace TplParser
                 | "rex"     + OPTIONAL_VAR + STRING + LIST_OF_ARGUMENTS
                 | "select"  + LIST_OF_VARIABLES
                 | "sort"    + LIST_OF_SORT_VARIABLES
-                | "stats"   //This needs help
+                | "stats"   + LIST_OF_VARIABLES + OPTIONAL_BY_FIELDS + LIST_OF_ARGUMENTS
                 | "where"   + EXPRESSION_LVL0
                 | "toupper" + LIST_OF_VARIABLES + LIST_OF_ARGUMENTS
                 | "tolower" + LIST_OF_VARIABLES + LIST_OF_ARGUMENTS

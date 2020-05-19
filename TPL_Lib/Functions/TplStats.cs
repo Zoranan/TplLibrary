@@ -11,6 +11,8 @@ namespace TplLib.Functions
 {
     public class TplStats : TplFunction
     {
+        private bool _init = false;
+
         public bool Count { get; internal set; } = false;
         public bool Sum { get; internal set; } = false;
         public bool Avg { get; internal set; } = false;
@@ -31,197 +33,83 @@ namespace TplLib.Functions
             ByFields = byFields;
             _sorter = new TplSort(ByFields.Select(f => new TplSortField(f)).ToList());
         }
+
+        internal void InitPostConstructor()
+        {
+            //Verify all fields are set properly
+
+            _init = true;
+        }
         #endregion
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
+            if ((Sum || Avg) && !TargetFields.Any())
+                throw new InvalidOperationException("Stats function requires at least one target field to be specified when calculating sum/average");
+
+            if (!input.Any()) 
+                return input;
+
             var results = new List<TplResult>();
 
-            if (_sorter == null)
-                _sorter = new TplSort(ByFields.Select(f => new TplSortField(f)).ToList());
+            // If no 'By Fields' are specified, all results will end up in one big group
+            var groupByResult = input
+                .GroupBy(r => ByFields.Aggregate("", (t, b) => t + r.StringValueOf(b)))
+                .Select(g => new 
+                    { 
+                        FinalResult = g.First().Copy(),
+                        WholeGroup = g.ToList(),
+                        Sums = TargetFields.ToDictionary(f => f, _ => 0.0)
+                    })
+                .ToList();
 
-            if (input.Count > 0)
-            {
-                #region No BY field
-                //NO 'BY' FIELD
-                if (ByFields == null || ByFields.Count == 0)
+            var tplSelectFields = ByFields.ToList();
+
+            // Target fields do not matter for Count
+            if (Count)
+                foreach (var group in groupByResult)
                 {
-                    var sums = new double[TargetFields.Count];
-
-                    if (Count)
-                        input[0].AddOrUpdateField("Count", input.Count.ToString());
-
-                    if (Sum || Avg)
-                    {
-                        //Populate index 0 of sum array
-                        for (int j = 0; j < sums.Length; j++)
-                        {
-                            input[0].TryNumericValueOf(TargetFields[j], out double sum);
-                            sums[j] = sum;
-                        }
-
-                        //Add the values of each target field from each result to its respective sum
-                        int resultsToAvgBy = 0;
-                        for (int i = 1; i < input.Count; i++)
-                        {
-                            for (int j = 0; j < sums.Length; j++)
-                            {
-                                if (input[i].TryNumericValueOf(TargetFields[j], out double result))
-                                {
-                                    resultsToAvgBy++;
-                                    sums[j] += result;
-                                }
-                            }
-                        }
-
-
-                        for (int j = 0; j < sums.Length; j++)
-                        {
-                            var fieldName = TargetFields[j];
-                            var formatString = input[0].StringValueOf(TargetFields[j]);
-
-                            if (Sum)
-                            {
-                                var value = sums[j].FormatLikeNumber(formatString);
-
-                                input[0].AddOrUpdateField("Sum_of_" + fieldName, value);
-                            }
-
-                            if (Avg)
-                            {
-                                var value = (sums[j] / resultsToAvgBy).FormatLikeNumber(formatString);
-
-                                input[0].AddOrUpdateField("Avg_of_" + TargetFields[j], value);
-                            }
-                        }
-                    }
-                    
-
-                    results.Add(input[0]);
+                    var newField = "Count";
+                    group.FinalResult.AddOrUpdateField(newField, group.WholeGroup.Count);
+                    tplSelectFields.Add(newField);
                 }
-                #endregion
 
-                #region Have BY Field(s)
-                //Only made it here if we have a 'BY'
-                else
+            // Target fields must be specified for Sum and Avg
+            if (Sum || Avg)
+            {
+                //Calculate the Sum (Needed for average anyway)
+                foreach (var group in groupByResult)
                 {
-                    _sorter.Process(input);
-
-                    var currentCombo = input[0];
-                    
-                    //Set up temp variables
-                    var sums = new double[TargetFields.Count];
-                    var divBy = new int[TargetFields.Count];
-                    int currentCount = 1;
-
-                    for (int j = 0; j < sums.Length; j++)
+                    foreach (var field in TargetFields)
                     {
-                        currentCombo.TryNumericValueOf(TargetFields[j], out double sum);
-                        sums[j] = sum;
-                        divBy[j] = 0;
-                    }
-
-
-                    for (int i = 1; i < input.Count; i++)
-                    {
-                        //Store current values
-                        if (ByFields != null && !currentCombo.Matches(input[i], ByFields))
-                        {
-                            for (int j = 0; j < sums.Length; j++)
-                            {
-                                var fieldName = TargetFields[j];
-                                var formatString = currentCombo.StringValueOf(TargetFields[j]);
-
-                                if (Sum)
-                                {
-                                    var value = sums[j].FormatLikeNumber(formatString);
-
-                                    currentCombo.AddOrUpdateField("Sum_of_" + fieldName, value);
-                                }
-
-                                if (Avg)
-                                {
-                                    var value = (sums[j] / currentCount).FormatLikeNumber(formatString);
-
-                                    currentCombo.AddOrUpdateField("Avg_of_" + TargetFields[j], value);
-                                }
-
-                                sums[j] = 0;
-                            }
-
-                            if (Count)
-                            {
-                                currentCombo.AddOrUpdateField("Count", currentCount.ToString());
-                            }
-
-                            currentCount = 0;
-                            results.Add(currentCombo);
-                            currentCombo = input[i];
-                        }
-
-                        for (int j = 0; j < sums.Length; j++)
-                        {
-                            if (input[i].TryNumericValueOf(TargetFields[j], out double result))
-                            {
-                                sums[j] += result;
-                                divBy[j]++;
-                            }
-                        }
-
-                        currentCount++;
-                    }
-
-                    if (Count)
-                        currentCombo.AddOrUpdateField("Count", currentCount.ToString());
-
-                    for (int j = 0; j < sums.Length; j++)
-                    {
-                        var fieldName = TargetFields[j];
-                        var formatString = currentCombo.StringValueOf(TargetFields[j]);
-
+                        var value = group.WholeGroup.Aggregate(0.0, (total, next) => total + next.NumericValueOf(field));
+                        group.Sums[field] = value;
                         if (Sum)
                         {
-                            var value = sums[j].FormatLikeNumber(formatString);
-
-                            currentCombo.AddOrUpdateField("Sum_of_" + fieldName, value);
-                        }
-
-                        if (Avg)
-                        {
-                            var value = (sums[j] / divBy[j]).FormatLikeNumber(formatString);
-
-                            currentCombo.AddOrUpdateField("Avg_of_" + TargetFields[j], value);
+                            var newField = field + "_Sum";
+                            group.FinalResult.AddOrUpdateField(newField, value);
+                            tplSelectFields.Add(newField);
+                            
                         }
                     }
-
-                    results.Add(currentCombo);
                 }
-                #endregion
-            }
 
-            #region Filtering the results
-            //Filter uneeded fields from the results
-            var selectFields = new List<string>();
-
-            if (ByFields != null)
-                selectFields.AddRange(ByFields);
-
-            foreach (var f in TargetFields)
-            {
-                if (Sum)
-                    selectFields.Add("Sum_of_" + f);
                 if (Avg)
-                    selectFields.Add("Avg_of_" + f);
+                {
+                    foreach (var group in groupByResult)
+                    {
+                        foreach (var field in TargetFields)
+                        {
+                            var newField = field + "_Avg";
+                            group.FinalResult.AddOrUpdateField(newField, group.Sums[field] / group.WholeGroup.Count);
+                            tplSelectFields.Add(newField);
+                        }
+                    }
+                }
             }
-            if (Count)
-                selectFields.Add("Count");
 
-            var select = new TplSelect(selectFields);
-            select.RemoveEntriesWithNullValues = false;
-            select.Process(results);
-            #endregion
-
-            return results;
+            var select = new TplSelect(tplSelectFields);
+            return select.Process(groupByResult.Select(g => g.FinalResult));
         }
     }
 }

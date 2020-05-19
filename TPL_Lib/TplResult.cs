@@ -28,6 +28,7 @@ namespace TplLib
         #endregion
 
         #region Constructors
+        private TplResult() { }
         public TplResult(string message, string src = null)
         {
             _fields.Add(DEFAULT_FIELD, new TplVariable(message));
@@ -36,6 +37,15 @@ namespace TplLib
             {
                 _fields.Add("Source", new TplVariable(src));
             }                
+        }
+
+        public TplResult Copy()
+        {
+            var r = new TplResult();
+            foreach (var field in _fields)
+                r._fields.Add(field.Key, new TplVariable(field.Value.Value));
+
+            return r;
         }
         #endregion
 
