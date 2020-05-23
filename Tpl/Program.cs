@@ -42,74 +42,74 @@ namespace Tpl
 
         private static void ProcessOptions(Options options)
         {
-            TplSearch tpl;
+            //TplSearch tpl;
 
             //A query was provided directly on the command line
-            if (!string.IsNullOrWhiteSpace(options.TplQuery))
-            {
-                tpl = new TplSearch(options.TplQuery);
-            }
+            //if (!string.IsNullOrWhiteSpace(options.TplQuery))
+            //{
+            //    tpl = new TplSearch(options.TplQuery);
+            //}
 
-            //A query was provided via a Tpl file
-            else if (!string.IsNullOrWhiteSpace(options.TplFilePath))
-            {
-                tpl = new TplSearch(System.IO.File.ReadAllText(options.TplFilePath));
-            }
+            ////A query was provided via a Tpl file
+            //else if (!string.IsNullOrWhiteSpace(options.TplFilePath))
+            //{
+            //    tpl = new TplSearch(System.IO.File.ReadAllText(options.TplFilePath));
+            //}
 
-            //No query was provided
-            else
-            {
-                //Throw an error?
-                console.WriteLine("", ConsoleColor.DarkGray);
-                return;
-            }
+            ////No query was provided
+            //else
+            //{
+            //    //Throw an error?
+            //    console.WriteLine("", ConsoleColor.DarkGray);
+            //    return;
+            //}
 
 
-            var input = new List<TplResult>();
+            //var input = new List<TplResult>();
 
-            //Set the TPL source if one was set explicitly by cmd line args
-            if (!string.IsNullOrWhiteSpace(options.InputFilePath))
-            {
-                tpl.Source = options.InputFilePath;
-            }
+            ////Set the TPL source if one was set explicitly by cmd line args
+            //if (!string.IsNullOrWhiteSpace(options.InputFilePath))
+            //{
+            //    tpl.Source = options.InputFilePath;
+            //}
 
-            //Read from Stdin
-            else if (options.ReadFromStdIn)
-            {
-                string line;
+            ////Read from Stdin
+            //else if (options.ReadFromStdIn)
+            //{
+            //    string line;
 
-                //Read input
-                while ((line = Console.ReadLine()) != null)
-                {
-                    input.Add(new TplResult(line));
-                }
-            }
+            //    //Read input
+            //    while ((line = Console.ReadLine()) != null)
+            //    {
+            //        input.Add(new TplResult(line));
+            //    }
+            //}
 
-            List<TplResult> results;
+            //List<TplResult> results;
 
-            //No input, exit
-            if (input.Count == 0 && !tpl.HasSource)
-            {
-                console.WriteLine("No input to process. Add a source parameter in your query, specify an input file (-i or -input) or pipe input into Tpl from another application (use -Stdin / -s switch)", ConsoleColor.Yellow);
-                return;
-            }
+            ////No input, exit
+            //if (input.Count == 0 && !tpl.HasSource)
+            //{
+            //    console.WriteLine("No input to process. Add a source parameter in your query, specify an input file (-i or -input) or pipe input into Tpl from another application (use -Stdin / -s switch)", ConsoleColor.Yellow);
+            //    return;
+            //}
 
-            //Process the input
-            else if (tpl.HasSource)
-            {
-                results = tpl.Process();
-            }
-            else
-            {
-                results = tpl.Process(input);
-            }
+            ////Process the input
+            //else if (tpl.HasSource)
+            //{
+            //    results = tpl.Process();
+            //}
+            //else
+            //{
+            //    results = tpl.Process(input);
+            //}
 
-            //Determine what to do with the output
-            //For not just print it all to the console
-            foreach (var o in results)
-            {
-                console.WriteLine(o.PrintValuesOnly());
-            }
+            ////Determine what to do with the output
+            ////For not just print it all to the console
+            //foreach (var o in results)
+            //{
+            //    console.WriteLine(o.PrintValuesOnly());
+            //}
         }
     }
 }

@@ -5,44 +5,29 @@ using System.Text;
 using System.Threading.Tasks;
 using TplLib.Extensions;
 using TplLib.Tpl_Parser;
+using TplLib.Tpl_Parser.ExpressionTree;
 
 namespace TplLib.Functions
 {
-    // PIPELINE SYNTAX
-    //
-    // where fieldName == "Value"
-    // where CONDITION == TRUE
-    //
-
     /// <summary>
     /// Removes all fields from a list of TplResults EXCEPT the ones that meet the specified condition
     /// </summary>
     public class TplWhere : TplFunction
     {
-        private ExpressionEV.Expression _condition;
+        private ExpTreeNode _condition;
 
-        public TplWhere(string condition) { _condition = new ExpressionEV.Expression(condition); }
-
-        //public TplWhere (ParsableString query)
-        //{
-        //    _condition = new ExpressionEV.Expression(query.GetRemainder().Value());
-        //}
+        internal TplWhere(ExpTreeNode condition) { _condition = condition; }
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
             for (int i=0; i<input.Count; i++)
             {
-                bool eval = true;
-
                 //Set the variables in our condition to what we have in this TplResult
                 foreach (var varName in _condition.VarNames)
-                {
-                    var value = input[i].StringValueOf(varName);
-                    _condition.SetVar(varName, value);
-                }
+                    _condition.SetVariableValue(varName, input[i].ValueOf(varName));
 
                 //Evaluate the condition. If it is false, remove this TplResult
-                if (eval && !_condition.EvalAsBool())
+                if (!_condition.EvalAsBool())
                 {
                     input.RemoveAt(i);
                     i--;

@@ -11,8 +11,6 @@ namespace TplLib.Functions
 {
     public class TplStats : TplFunction
     {
-        private bool _init = false;
-
         public bool Count { get; internal set; } = false;
         public bool Sum { get; internal set; } = false;
         public bool Avg { get; internal set; } = false;
@@ -32,13 +30,6 @@ namespace TplLib.Functions
             TargetFields = sumFields;
             ByFields = byFields;
             _sorter = new TplSort(ByFields.Select(f => new TplSortField(f)).ToList());
-        }
-
-        internal void InitPostConstructor()
-        {
-            //Verify all fields are set properly
-
-            _init = true;
         }
         #endregion
 

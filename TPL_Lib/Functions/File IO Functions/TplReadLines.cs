@@ -18,6 +18,9 @@ namespace TplLib.Functions.File_IO_Functions
                 _folderPath = Path.GetDirectoryName(value);
                 _fileNamePattern = Path.GetFileName(value);
                 _fullPath = value;
+
+                if (string.IsNullOrWhiteSpace(_folderPath))
+                    _folderPath = @".\";
             }
         }
         public bool Recurse { get; internal set; }

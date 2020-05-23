@@ -1,5 +1,6 @@
 ﻿using CSharpUtils.Extensions;
 using Irony;
+using Irony.Ast;
 using Irony.Parsing;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,9 @@ using TplLib.Extensions;
 using TplLib.Functions;
 using TplLib.Functions.File_IO_Functions;
 using TplLib.Functions.String_Functions;
+using TplLib.Tpl_Parser.ExpressionTree;
+using TplLib.Tpl_Parser.ExpressionTree.Operators.Binary;
+using TplLib.Tpl_Parser.ExpressionTree.Operators.Unary;
 using TplParser;
 using static TplLib.Functions.String_Functions.TplStringConcat;
 
@@ -59,12 +63,14 @@ namespace TplLib
                             };
                             break;
 
-                        //case "eval":    //TODO: This aint right....
-                        //    currentFunction = new TplEval(funcNode[3].FindToken().ValueString)
-                        //    {
-                        //        NewFieldName = funcNode[1].FindToken().ValueString,
-                        //    };
-                        //    break;
+                        case "eval":
+                            var expTree = GetAsExpressionTree(funcNode[3], null);
+
+                            currentFunction = new TplEval(funcNode[3].GetAsExpressionTree(null))
+                            {
+                                NewFieldName = funcNode[1].FindTokenAndGetValue<string>(),
+                            };
+                            break;
 
                         case "group":
                             currentFunction = new TplGroup()
@@ -134,9 +140,9 @@ namespace TplLib
                             }
                             break;
 
-                        //case "where":
-
-                        //    break;
+                        case "where":
+                            currentFunction = new TplWhere(funcNode[1].GetAsExpressionTree(null));
+                            break;
 
                         case "tolower":
                         case "toupper":
@@ -393,6 +399,121 @@ namespace TplLib
         {
             try { return node.FindToken().ValueString.As<T>(); }
             catch { throw node.GetException($"Invalid token '{node.FindTokenAndGetText()}'. Expected a token of type {typeof(T)}"); }
+        }
+
+        
+        private static ExpTreeNode GetAsExpressionTree(this ParseTreeNode parsedNode, ExpTreeNode parentExpNode)
+        {
+            //The current node is a variable / value token. Create a value node and return it back
+            if (!parsedNode.ChildNodes.Any())
+            {
+                switch (parsedNode.Term.Name)
+                {
+                    case "variable":
+                        {
+                            var varName = parsedNode.FindTokenAndGetValue<string>();
+                            return new VariableValue(varName, parentExpNode);
+                        }
+
+                    case "boolean":
+                        return new LiteralValue(parsedNode.FindTokenAndGetValue<bool>(), parentExpNode);
+
+                    case "integer":
+                    case "decimal":
+                        return new LiteralValue(parsedNode.FindTokenAndGetValue<double>(), parentExpNode);
+
+                    case "SingleQuoteString":
+                    case "DoubleQuoteString":
+                        return new LiteralValue(parsedNode.FindTokenAndGetValue<string>(), parentExpNode);
+
+                    default:
+                        throw parsedNode.GetException($"Invalid token type '{parsedNode.Term.Name}' in expression");
+
+                }
+            }
+
+            // Look on the next node down
+            else if (parsedNode.ChildNodes.Count == 1)
+            {
+                return GetAsExpressionTree(parsedNode.ChildNodes[0], parentExpNode);
+            }
+
+            //Ignore parenthesis, the middle non-terminal is what we want
+            // Look on the next node down
+            else if (parsedNode.ChildNodes.Count == 3 && parsedNode.ChildNodes[0]?.Token?.Text == "(")
+            {
+                return GetAsExpressionTree(parsedNode.ChildNodes[1], parentExpNode);
+            }
+
+            //Binary operator
+            else if (parsedNode.ChildNodes.Count == 3)
+            {
+                BinaryOperatorBase binaryOp;
+                var opStr = parsedNode.ChildNodes[1].FindToken().ValueString;
+                switch (opStr)
+                {
+                    case "+":
+                        binaryOp = new AdditionOperator(parentExpNode);
+                        break;
+                    case "-":
+                        binaryOp = new SubtractionOperator(parentExpNode);
+                        break;
+                    case "*":
+                        binaryOp = new MultiplacationOperator(parentExpNode);
+                        break;
+                    case "/":
+                        binaryOp = new DivisionOperator(parentExpNode);
+                        break;
+                    case "%":
+                        binaryOp = new ModulusOperator(parentExpNode);
+                        break;
+                    case "^":
+                        binaryOp = new PowerOperator(parentExpNode);
+                        break;
+
+                    default:
+                        throw parsedNode.ChildNodes[1].GetException($"Unrecognized operator '{opStr}'");
+                }
+
+                binaryOp.LeftOperand = GetAsExpressionTree(parsedNode.ChildNodes[0], binaryOp);
+                binaryOp.RightOperand = GetAsExpressionTree(parsedNode.ChildNodes[2], binaryOp);
+
+                //Optimize
+                if (binaryOp.LeftOperand is LiteralValue && binaryOp.RightOperand is LiteralValue)
+                    return new LiteralValue(binaryOp.Eval(), parentExpNode);
+
+                return binaryOp;
+            }
+
+            // Unary operator
+            else if (parsedNode.ChildNodes.Count == 2)
+            {
+                var opStr = parsedNode.ChildNodes[0].FindTokenAndGetText();
+                UnaryOperatorBase unaryOp;
+                switch (opStr.ToLower())
+                {
+                    case "!":
+                        unaryOp = new NotOperator(parentExpNode);
+                        break;
+
+                    default:
+                        unaryOp = new GenericUnaryMathFunctionOperator(opStr, parentExpNode);
+                        break;
+                }
+
+                unaryOp.Operand = GetAsExpressionTree(parsedNode.ChildNodes[1], unaryOp);
+
+                //Optimize
+                if (unaryOp.Operand is LiteralValue)
+                    return new LiteralValue(unaryOp.Eval(), parentExpNode);
+
+                return unaryOp;
+            }
+
+            else
+            {
+                throw parsedNode.GetException($"Invalid number of tokens ({parsedNode.ChildNodes.Count})");
+            }
         }
 
         //Getting exceptions

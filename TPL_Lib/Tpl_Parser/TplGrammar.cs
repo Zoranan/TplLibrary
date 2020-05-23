@@ -31,7 +31,6 @@ namespace TplParser
             { EditorInfo = new TokenEditorInfo(TokenType.Literal, TokenColor.Number, TokenTriggers.None) };
             
             //var word = new RegexBasedTerminal("word", @"\b\w+\b");
-
             var variable = new RegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
             variable.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
             variable.ValueSelector = s => s.Substring(1);
@@ -39,6 +38,9 @@ namespace TplParser
             var argument = new RegexBasedTerminal("ArgumentName", "-[A-Za-z]+");
             argument.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
             argument.ValueSelector = s => s.Substring(1);
+
+            var word = new RegexBasedTerminal("word", @"\w+");
+            argument.EditorInfo = new TokenEditorInfo(TokenType.Text, TokenColor.Text, TokenTriggers.None);
 
             var dblQuoteString = TerminalFactory.CreateCSharpString("DoubleQuoteString"); // Allows Literal strings (@"\string")
             var singleQuoteString = new StringLiteral("SingleQuoteString", "'");
@@ -72,6 +74,7 @@ namespace TplParser
             var EXPRESSION_LVL5 = new NonTerminal("EXPRESSION LVL 5");
             var EXPRESSION_LVL6 = new NonTerminal("EXPRESSION LVL 6");
             var EXPRESSION_LVL7 = new NonTerminal("EXPRESSION LVL 7");
+            var EXPRESSION_LVL8 = new NonTerminal("EXPRESSION LVL 8");
 
             LIST_OF_VARIABLES.Rule = MakeListRule(LIST_OF_VARIABLES, comma, variable, TermListOptions.AllowEmpty);
             LIST_OF_ARGUMENTS.Rule = MakeListRule(LIST_OF_ARGUMENTS, null, NAMED_ARGUMENT, TermListOptions.AllowEmpty);
@@ -106,8 +109,8 @@ namespace TplParser
                 | Empty
                 ;
 
+
             EXPRESSION_LVL0.Rule = EXPRESSION_LVL1
-                | ToTerm("!", "not_op") + EXPRESSION_LVL1
                 | EXPRESSION_LVL0 + ToTerm("||", "or_op") + EXPRESSION_LVL1
                 ;
 
@@ -142,7 +145,21 @@ namespace TplParser
                 | EXPRESSION_LVL7 + ToTerm("^", "pow_op") + EXPRESSION_LVL6
                 ;
 
-            EXPRESSION_LVL7.Rule = VALUE
+            EXPRESSION_LVL7.Rule = EXPRESSION_LVL8
+                | ToTerm("!", "not_op") + EXPRESSION_LVL8
+                | ToTerm("abs", "round_op") + EXPRESSION_LVL8
+                | ToTerm("cos", "round_op") + EXPRESSION_LVL8
+                | ToTerm("ceiling", "round_op") + EXPRESSION_LVL8
+                | ToTerm("floor", "round_op") + EXPRESSION_LVL8
+                | ToTerm("log", "round_op") + EXPRESSION_LVL8
+                | ToTerm("log10", "round_op") + EXPRESSION_LVL8
+                | ToTerm("round", "round_op") + EXPRESSION_LVL8
+                | ToTerm("sin", "round_op") + EXPRESSION_LVL8
+                | ToTerm("tan", "round_op") + EXPRESSION_LVL8
+                | ToTerm("sqrt", "round_op") + EXPRESSION_LVL8
+                ;
+
+            EXPRESSION_LVL8.Rule = VALUE
                 | "(" + EXPRESSION_LVL0 + ")"
                 ;
 

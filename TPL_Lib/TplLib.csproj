@@ -65,7 +65,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tpl.cs" />
     <Compile Include="TplResult.cs" />
-    <Compile Include="Tpl_Parser\Attributes\Attributes.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\LiteralValue.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\Binary\BinaryOperatorBase.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\ExpTreeNode.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\Binary\BinaryMathOperators.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\OperatorBase.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\Unary\UnaryOperatorBase.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\Unary\UnaryOperators.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\ValueNodeBase.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\VariableValue.cs" />
     <Compile Include="Tpl_Parser\StringExtensions.cs" />
     <Compile Include="Tpl_Parser\TplGrammar.cs" />
   </ItemGroup>
@@ -84,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="bin\Release\ExpressionEV.dll" />
+    <Content Include="bin\Release\TextFormatterLanguage.dll" />
     <Content Include="bin\Release\TPL_Lib.dll" />
   </ItemGroup>
   <ItemGroup />

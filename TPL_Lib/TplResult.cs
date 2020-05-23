@@ -113,44 +113,24 @@ namespace TplLib
         #region Field Manipulation and Information
         public double NumericValueOf (string key)
         {
-            TplVariable sValue;
-            try
-            {
-                sValue = Fields[key];
-            }
-            catch (KeyNotFoundException)
-            {
-                return 0;
-            }
-
-            return sValue.NumberValue();
-
+            return Fields?[key]?.NumberValue() ?? 0;
         }
 
         public bool TryNumericValueOf (string key, out double result)
         {
-            try
-            {
-                result = NumericValueOf(key);
-                return true;
-            }
-            catch
-            {
-                result = 0;
-                return false;
-            }
+            var value = Fields?[key]?.NumberValue();
+            result = value.HasValue ? value.Value : 0;
+            return value.HasValue;
         }
 
         public string StringValueOf (string key)
         {
-            try
-            {
-                return _fields[key].StringValue();
-            }
-            catch (KeyNotFoundException)
-            {
-                return "";
-            }
+            return _fields?[key].StringValue() ?? "";
+        }
+
+        public object ValueOf(string key)
+        {
+            return _fields?[key].Value;
         }
 
         public bool AddField(string key, IComparable value)
@@ -169,7 +149,7 @@ namespace TplLib
             }
         }
 
-        public void AddOrUpdateField(string key, IComparable value)
+        public void AddOrUpdateField(string key, object value)
         {
             if (READONLY_FIELDS.Contains(key))
                 throw new InvalidOperationException(key + " is reserved as readonly");
@@ -248,8 +228,17 @@ namespace TplLib
 
         public class TplVariable
         {
-            public IComparable Value { get; internal set; }
-            public TplVariable (IComparable value) { Value = value; }
+            private object _value;
+            public object Value {
+                get => _value;
+                
+                internal set
+                {
+                    _value = value;
+                    CastAutoType(); //May want to make this more controllable
+                }
+            }
+            public TplVariable (object value) { Value = value; }
 
             #region Getting Value As
             internal string StringValue()
@@ -257,6 +246,14 @@ namespace TplLib
                 if (Value is string str) return str;
                 else return Value.ToString();
             }
+
+            //internal DateTime ToDateTime()
+            //{
+            //    if (Value is DateTime dt) return dt;
+            //    try { return Convert.ToDateTime(Value); }
+            //    catch (Exception e) when (e is FormatException || e is InvalidCastException)
+            //    { return default; }
+            //}
 
             internal double NumberValue()
             {
@@ -281,28 +278,37 @@ namespace TplLib
             #region Convert Stored Value Type
             internal void CastString()
             {
-                Value = StringValue();
+                _value = StringValue();
             }
+
+            //internal void CastDateTime()
+            //{
+            //    _value = ToDateTime();
+            //}
 
             internal void CastNumber()
             {
-                Value = NumberValue();
+                _value = NumberValue();
             }
 
             internal void CastBool()
             {
-                Value = BoolValue();
+                _value = BoolValue();
             }
 
             internal void CastAutoType()
             {
-                try { Value = Convert.ToBoolean(Value); return; }
+                try { _value = Convert.ToDouble(Value); return; }
+                catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                { /*Convert Failed. Try a datetime*/ }
+
+                try { _value = Convert.ToBoolean(Value); return; }
                 catch (Exception e) when (e is FormatException || e is InvalidCastException)
                 { /*Convert Failed. Lets try a double*/ }
 
-                try { Value = Convert.ToDouble(Value); return; }
-                catch (Exception e) when (e is FormatException || e is InvalidCastException)
-                { /*Convert Failed. Set it to a string*/ }
+                //try { _value = Convert.ToDateTime(Value); return; }
+                //catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                //{ /*Convert Failed. Set it to a string*/ }
 
                 CastString();
             }
