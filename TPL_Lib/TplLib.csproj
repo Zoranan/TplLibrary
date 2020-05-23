@@ -66,6 +66,7 @@
     <Compile Include="Tpl.cs" />
     <Compile Include="TplResult.cs" />
     <Compile Include="Tpl_Parser\ExpressionTree\LiteralValue.cs" />
+    <Compile Include="Tpl_Parser\ExpressionTree\Operators\Binary\BinaryBoolOperators.cs" />
     <Compile Include="Tpl_Parser\ExpressionTree\Operators\Binary\BinaryOperatorBase.cs" />
     <Compile Include="Tpl_Parser\ExpressionTree\ExpTreeNode.cs" />
     <Compile Include="Tpl_Parser\ExpressionTree\Operators\Binary\BinaryMathOperators.cs" />

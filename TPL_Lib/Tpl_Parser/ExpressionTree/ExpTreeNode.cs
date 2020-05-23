@@ -6,6 +6,24 @@ using System.Threading.Tasks;
 
 namespace TplLib.Tpl_Parser.ExpressionTree
 {
+    /// <summary>
+    /// Specifies what object type the node produces when 'Eval' is called
+    /// </summary>
+    internal enum EvalType
+    {
+        /// <summary>
+        /// This node produces a numeric (double) value
+        /// </summary>
+        Number,
+        /// <summary>
+        /// This node produces a boolean value
+        /// </summary>
+        Boolean,
+        /// <summary>
+        /// This node is not an operator (literal or variable)
+        /// </summary>
+        Value,
+    }
     abstract class ExpTreeNode
     {
         internal readonly ExpTreeNode Parent;

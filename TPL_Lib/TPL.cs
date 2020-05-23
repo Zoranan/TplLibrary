@@ -452,6 +452,7 @@ namespace TplLib
                 var opStr = parsedNode.ChildNodes[1].FindToken().ValueString;
                 switch (opStr)
                 {
+                    // Math
                     case "+":
                         binaryOp = new AdditionOperator(parentExpNode);
                         break;
@@ -469,6 +470,39 @@ namespace TplLib
                         break;
                     case "^":
                         binaryOp = new PowerOperator(parentExpNode);
+                        break;
+                    
+                    // Bool
+                    case "~=":
+                        binaryOp = new LooseEqualsOperator(parentExpNode);
+                        break;
+                    case "~!=":
+                        binaryOp = new LooseNotEqualsOperator(parentExpNode);
+                        break;
+                    case "==":
+                        binaryOp = new EqualsOperator(parentExpNode);
+                        break;
+                    case "!=":
+                        binaryOp = new NotEqualsOperator(parentExpNode);
+                        break;
+                    case ">":
+                        binaryOp = new GreaterThanOperator(parentExpNode);
+                        break;
+                    case ">=":
+                        binaryOp = new GreaterThanOrEqualOperator(parentExpNode);
+                        break;
+                    case "<":
+                        binaryOp = new LessThanOperator(parentExpNode);
+                        break;
+                    case "<=":
+                        binaryOp = new LessThanOrEqualOperator(parentExpNode);
+                        break;
+
+                    case "&&":
+                        binaryOp = new AndOperator(parentExpNode);
+                        break;
+                    case "||":
+                        binaryOp = new OrOperator(parentExpNode);
                         break;
 
                     default:
