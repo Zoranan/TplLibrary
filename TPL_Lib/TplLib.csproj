@@ -47,6 +47,7 @@
     <Compile Include="Extensions\TypeConversionExtensions.cs" />
     <Compile Include="Functions\File IO Functions\TplReadLines.cs" />
     <Compile Include="Functions\String Functions\TplSplice.cs" />
+    <Compile Include="Functions\String Functions\TplSplit.cs" />
     <Compile Include="Functions\String Functions\TplStringConcat.cs" />
     <Compile Include="Functions\String Functions\TplStringPad.cs" />
     <Compile Include="Functions\String Functions\TplSubstring.cs" />

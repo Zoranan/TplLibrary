@@ -210,6 +210,7 @@ namespace TplParser
                 | "padleft" + LIST_OF_VARIABLES + integer + LIST_OF_ARGUMENTS
                 | "padright"+ LIST_OF_VARIABLES + integer + LIST_OF_ARGUMENTS
                 | "substr"  + OPTIONAL_VAR + integer + OPTIONAL_INT + LIST_OF_ARGUMENTS
+                | "split"  + OPTIONAL_VAR + STRING
                 | "readlines" + STRING + LIST_OF_ARGUMENTS
                 ;
                 

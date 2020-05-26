@@ -35,6 +35,8 @@ namespace TplGui
         public MainWindow()
         {
             InitializeComponent();
+
+            //Set up the Irony FCTB
             _textBox = new IronyTextBox();
             _textBox.FastColoredTextBox.BackColor = System.Drawing.Color.FromArgb(255, 30, 30, 30);
             _textBox.FastColoredTextBox.ForeColor = System.Drawing.Color.White;
@@ -60,6 +62,7 @@ namespace TplGui
             _highlighter = new FastColoredTextBoxHighlighter(_textBox.FastColoredTextBox, new Irony.Parsing.LanguageData(new TplGrammar()), colorSettings);
             _highlighter.Adapter.Activate();
 
+            //Auto Save
             AppDomain.CurrentDomain.ProcessExit += (s, e) => File.WriteAllText(_tempPath, _textBox.Text);
 
             if (File.Exists(_tempPath))
@@ -80,8 +83,8 @@ namespace TplGui
                 {
                     errorPane.Visibility = Visibility.Collapsed;
                     Console.WriteLine("Pipeline Created");
+                    
                     //Execute
-
                     var results = query.Process();
                     var resultWindow = new ResultsGridWindow();
                     resultWindow.InitDataGrid(results);

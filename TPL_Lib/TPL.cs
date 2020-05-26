@@ -234,6 +234,16 @@ namespace TplLib
                             }
                             break;
 
+                        case "split":
+                            {
+                                currentFunction = new TplSplit()
+                                {
+                                    TargetField = GetOptionalVariable(funcNode[1]),
+                                    SplitOn = funcNode[2].FindTokenAndGetValue<string>(),
+                                };
+                            }
+                            break;
+
                         case "readlines":
                             {
                                 ValidateArgumentList(funcNode[2], "recurse");
