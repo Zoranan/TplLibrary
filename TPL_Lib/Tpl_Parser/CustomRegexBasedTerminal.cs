@@ -32,7 +32,7 @@ namespace TplParser
         #endregion
 
         public Regex Expression { get; private set; }
-        public Func<string, string> ValueSelector { get; set; }
+        public Func<Match, object> ValueSelector { get; set; }
 
         #region Constructors
         public CustomRegexBasedTerminal(string pattern, params string[] prefixes) : base("name")
@@ -73,7 +73,7 @@ namespace TplParser
             source.PreviewPosition += m.Length;
 
             if (ValueSelector != null)
-                return source.CreateToken(this, ValueSelector.Invoke(m.Value));
+                return source.CreateToken(this, ValueSelector.Invoke(m));
 
             return source.CreateToken(OutputTerminal);
         }

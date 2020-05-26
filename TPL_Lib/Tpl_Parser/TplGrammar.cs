@@ -32,11 +32,11 @@ namespace TplParser
             
             var variable = new CustomRegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
             variable.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
-            variable.ValueSelector = s => s.Substring(1);
+            variable.ValueSelector = s => s.Value.Substring(1);
 
             var argument = new CustomRegexBasedTerminal("ArgumentName", "-[A-Za-z]+");
             argument.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
-            argument.ValueSelector = s => s.Substring(1);
+            argument.ValueSelector = s => s.Value.Substring(1);
 
             var word = new RegexBasedTerminal("word", @"\w+");
             argument.EditorInfo = new TokenEditorInfo(TokenType.Text, TokenColor.Text, TokenTriggers.None);
