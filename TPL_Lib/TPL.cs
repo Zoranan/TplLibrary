@@ -473,7 +473,7 @@ namespace TplLib
                         break;
                     
                     // Bool
-                    case "~=":
+                    case "~==":
                         binaryOp = new LooseEqualsOperator(parentExpNode);
                         break;
                     case "~!=":
