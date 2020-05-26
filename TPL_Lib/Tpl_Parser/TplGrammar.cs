@@ -30,12 +30,11 @@ namespace TplParser
             var _decimal = new RegexBasedTerminal("decimal", @"-?\d+\.\d+") 
             { EditorInfo = new TokenEditorInfo(TokenType.Literal, TokenColor.Number, TokenTriggers.None) };
             
-            //var word = new RegexBasedTerminal("word", @"\b\w+\b");
-            var variable = new RegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
+            var variable = new CustomRegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
             variable.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
             variable.ValueSelector = s => s.Substring(1);
 
-            var argument = new RegexBasedTerminal("ArgumentName", "-[A-Za-z]+");
+            var argument = new CustomRegexBasedTerminal("ArgumentName", "-[A-Za-z]+");
             argument.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
             argument.ValueSelector = s => s.Substring(1);
 

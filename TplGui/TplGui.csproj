@@ -38,14 +38,11 @@
     <ApplicationIcon>Resources\tpl.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FastColoredTextBox">
-      <HintPath>..\..\Irony-master\Irony.WinForms\bin\Release\FastColoredTextBox.dll</HintPath>
+    <Reference Include="FastColoredTextBox, Version=2.16.24.0, Culture=neutral, PublicKeyToken=fb8aa12b994ef61b, processorArchitecture=MSIL">
+      <HintPath>..\packages\FCTB.2.16.24\lib\FastColoredTextBox.dll</HintPath>
     </Reference>
-    <Reference Include="Irony">
-      <HintPath>..\..\Irony-master\Irony\bin\Release\net40\Irony.dll</HintPath>
-    </Reference>
-    <Reference Include="Irony.WinForms">
-      <HintPath>..\..\Irony-master\Irony.WinForms\bin\Release\Irony.WinForms.dll</HintPath>
+    <Reference Include="Irony, Version=1.1.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
+      <HintPath>..\packages\Irony.1.1.0\lib\net40\Irony.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -70,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ColorUtil.cs" />
     <Compile Include="ResultsGridWindow.xaml.cs">
       <DependentUpon>ResultsGridWindow.xaml</DependentUpon>
     </Compile>
@@ -108,6 +106,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -117,6 +116,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Irony.WinForms\035.Irony.WinForms.csproj">
+      <Project>{70D319F3-3C0C-4EB5-A271-58ED22FB3070}</Project>
+      <Name>035.Irony.WinForms</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TPL_Lib\TplLib.csproj">
       <Project>{74d58308-8cb7-409b-a3a9-b502853117f0}</Project>
       <Name>TplLib</Name>

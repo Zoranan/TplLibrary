@@ -36,12 +36,27 @@ namespace TplGui
         {
             InitializeComponent();
             _textBox = new IronyTextBox();
+            _textBox.FastColoredTextBox.BackColor = System.Drawing.Color.FromArgb(255, 30, 30, 30);
+            _textBox.FastColoredTextBox.ForeColor = System.Drawing.Color.White;
+
             _textBox.FastColoredTextBox.Zoom = 125;
+
             textBoxHolder.Child = _textBox;
             _textBox.FastColoredTextBox.ChangeFontSize(2);
             _textBox.Load += (s, e) => _textBox.Focus();
 
-            _highlighter = new FastColoredTextBoxHighlighter(_textBox.FastColoredTextBox, new Irony.Parsing.LanguageData(new TplGrammar()));
+            var colorSettings = new ColorSettings()
+            {
+                Default =   new TextStyle(ColorUtil.RGB(255, 255, 255), null, System.Drawing.FontStyle.Regular),
+                Comment =   new TextStyle(ColorUtil.RGB(90, 160, 70), null, System.Drawing.FontStyle.Regular),
+                Keyword =   new TextStyle(ColorUtil.RGB(60, 130, 170), null, System.Drawing.FontStyle.Regular),
+                Identifier = new TextStyle(ColorUtil.RGB(170, 200, 220), null, System.Drawing.FontStyle.Regular),
+                Number =    new TextStyle(ColorUtil.RGB(180, 200, 155), null, System.Drawing.FontStyle.Regular),
+                String =    new TextStyle(ColorUtil.RGB(215, 160, 130), null, System.Drawing.FontStyle.Regular),
+                Text =      new TextStyle(ColorUtil.RGB(255, 255, 255), null, System.Drawing.FontStyle.Regular),
+            };
+
+            _highlighter = new FastColoredTextBoxHighlighter(_textBox.FastColoredTextBox, new Irony.Parsing.LanguageData(new TplGrammar()), colorSettings);
             _highlighter.Adapter.Activate();
 
             AppDomain.CurrentDomain.ProcessExit += (s, e) => File.WriteAllText(_tempPath, _textBox.Text);
