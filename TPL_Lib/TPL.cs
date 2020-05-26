@@ -499,6 +499,9 @@ namespace TplLib
                     case "like":
                         binaryOp = new LikeOperator(parentExpNode);
                         break;
+                    case "match":
+                        binaryOp = new MatchOperator(parentExpNode);
+                        break;
                     case ">":
                         binaryOp = new GreaterThanOperator(parentExpNode);
                         break;

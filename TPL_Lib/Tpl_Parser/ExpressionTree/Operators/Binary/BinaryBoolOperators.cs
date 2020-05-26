@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
@@ -84,6 +85,21 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
             var left = LeftOperand.Eval();
             var right = RightOperand.Eval();
             return Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(left as string ?? left.ToString(), right as string ?? right.ToString(), Microsoft.VisualBasic.CompareMethod.Text);
+        }
+    }
+
+    internal class MatchOperator : BinaryOperatorBase // like
+    {
+        internal MatchOperator(ExpTreeNode parent) : base(parent)
+        {
+            //
+        }
+
+        internal override object Eval()
+        {
+            var left = LeftOperand.Eval();
+            var right = RightOperand.Eval();
+            return Regex.Match(left as string ?? left.ToString(), right as string ?? right.ToString());
         }
     }
 

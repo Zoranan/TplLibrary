@@ -125,7 +125,6 @@ namespace TplParser
                 | Empty
                 ;
 
-
             EXPRESSION_LVL0.Rule = EXPRESSION_LVL1
                 | EXPRESSION_LVL0 + ToTerm("||", "or_op") + EXPRESSION_LVL1
                 ;
@@ -140,6 +139,7 @@ namespace TplParser
                 | EXPRESSION_LVL2 + ToTerm("~==", "loose_eq_op") + EXPRESSION_LVL3
                 | EXPRESSION_LVL2 + ToTerm("~!=", "loose_eq_op") + EXPRESSION_LVL3
                 | EXPRESSION_LVL2 + ToTerm("like", "like_op") + EXPRESSION_LVL3
+                | EXPRESSION_LVL2 + ToTerm("match", "match_op") + EXPRESSION_LVL3
                 ;
 
             EXPRESSION_LVL3.Rule = EXPRESSION_LVL4
@@ -210,7 +210,7 @@ namespace TplParser
                 | "padleft" + LIST_OF_VARIABLES + integer + LIST_OF_ARGUMENTS
                 | "padright"+ LIST_OF_VARIABLES + integer + LIST_OF_ARGUMENTS
                 | "substr"  + OPTIONAL_VAR + integer + OPTIONAL_INT + LIST_OF_ARGUMENTS
-                | "split"  + OPTIONAL_VAR + STRING
+                | "split"   + OPTIONAL_VAR + STRING
                 | "readlines" + STRING + LIST_OF_ARGUMENTS
                 ;
                 
