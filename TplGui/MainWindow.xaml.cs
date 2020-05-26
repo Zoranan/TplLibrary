@@ -38,6 +38,7 @@ namespace TplGui
             _textBox = new IronyTextBox();
             _textBox.FastColoredTextBox.BackColor = System.Drawing.Color.FromArgb(255, 30, 30, 30);
             _textBox.FastColoredTextBox.ForeColor = System.Drawing.Color.White;
+            _textBox.FastColoredTextBox.SelectionColor = System.Drawing.Color.FromArgb(150, 50, 180, 200);
 
             _textBox.FastColoredTextBox.Zoom = 125;
 

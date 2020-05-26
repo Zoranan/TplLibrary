@@ -119,9 +119,9 @@ namespace TplParser
 
             EXPRESSION_LVL2.Rule = EXPRESSION_LVL3
                 | EXPRESSION_LVL2 + ToTerm("==", "equal_op") + EXPRESSION_LVL3
-                | EXPRESSION_LVL2 + ToTerm("~=", "loose_eq_op") + EXPRESSION_LVL3
-                | EXPRESSION_LVL2 + ToTerm("~!=", "loose_eq_op") + EXPRESSION_LVL3
                 | EXPRESSION_LVL2 + ToTerm("!=", "ne_op") + EXPRESSION_LVL3
+                | EXPRESSION_LVL2 + ToTerm("~==", "loose_eq_op") + EXPRESSION_LVL3
+                | EXPRESSION_LVL2 + ToTerm("~!=", "loose_eq_op") + EXPRESSION_LVL3
                 ;
 
             EXPRESSION_LVL3.Rule = EXPRESSION_LVL4

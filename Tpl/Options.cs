@@ -38,29 +38,5 @@ namespace Tpl
                     throw new ArgumentException("The --Tpl / -t option can not be empty");
             }
         }
-
-        private string _inputFile = null;
-        [Option('i', "InFile", Required = false, HelpText = "Path to the input file to be processed")]
-        public string InputFilePath { get => _inputFile;
-            set
-            {
-                if (!ReadFromStdIn)
-                    _inputFile = value;
-                else
-                    throw new ArgumentException("You can not use the --InFile / -i option at the same time as the --Stdin / -s option", nameof(InputFilePath));
-            }
-        }
-
-        private bool _readFromStdIn = false;
-        [Option('s', "Stdin", Required = false, HelpText = "Specifies that the Tpl should read input from the pipeline", Default = false)]
-        public bool ReadFromStdIn { get => _readFromStdIn;
-            set
-            {
-                if (InputFilePath == null)
-                    _readFromStdIn = value;
-                else if (_readFromStdIn)
-                    throw new ArgumentException("You can not use the --Stdin / -s option at the same time as the --InFile / -i option", nameof(InputFilePath));
-            }
-        }
     }
 }
