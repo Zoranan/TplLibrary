@@ -30,6 +30,23 @@ namespace TplParser
             var _decimal = new RegexBasedTerminal("decimal", @"-?\d+\.\d+") 
             { EditorInfo = new TokenEditorInfo(TokenType.Literal, TokenColor.Number, TokenTriggers.None) };
             
+            var typeConvert = new CustomRegexBasedTerminal("type_convert_op", @"\[(?<type>number|string|bool)\]");
+            typeConvert.EditorInfo = new TokenEditorInfo(TokenType.Keyword, TokenColor.Keyword, TokenTriggers.None);
+            typeConvert.ValueSelector = m =>
+            {
+                switch (m.Groups["type"].Value)
+                {
+                    case "number":
+                        return TypeCode.Double;
+                    case "string":
+                        return TypeCode.String;
+                    case "bool":
+                        return TypeCode.Boolean;
+                    default:
+                        return null;
+                }
+            };
+
             var variable = new CustomRegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
             variable.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
             variable.ValueSelector = s => s.Value.Substring(1);
@@ -159,6 +176,7 @@ namespace TplParser
                 | ToTerm("sin", "round_op") + EXPRESSION_LVL8
                 | ToTerm("tan", "round_op") + EXPRESSION_LVL8
                 | ToTerm("sqrt", "round_op") + EXPRESSION_LVL8
+                | typeConvert + EXPRESSION_LVL8
                 ;
 
             EXPRESSION_LVL8.Rule = VALUE

@@ -3,6 +3,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -525,17 +526,25 @@ namespace TplLib
             // Unary operator
             else if (parsedNode.ChildNodes.Count == 2)
             {
-                var opStr = parsedNode.ChildNodes[0].FindTokenAndGetText();
+                var opVal = parsedNode.ChildNodes[0].FindToken().Value;
                 UnaryOperatorBase unaryOp;
-                switch (opStr.ToLower())
+                if (parsedNode.ChildNodes[0].FindToken().Value is TypeCode convertType)
                 {
-                    case "!":
-                        unaryOp = new NotOperator(parentExpNode);
-                        break;
+                    unaryOp = new TypeConversionOperator(convertType, parentExpNode);
+                }
+                else
+                {
+                    var opStr = opVal.ToString();
+                    switch (opStr)
+                    {
+                        case "!":
+                            unaryOp = new NotOperator(parentExpNode);
+                            break;
 
-                    default:
-                        unaryOp = new GenericUnaryMathFunctionOperator(opStr, parentExpNode);
-                        break;
+                        default:
+                            unaryOp = new GenericUnaryMathFunctionOperator(opStr, parentExpNode);
+                            break;
+                    }
                 }
 
                 unaryOp.Operand = GetAsExpressionTree(parsedNode.ChildNodes[1], unaryOp);

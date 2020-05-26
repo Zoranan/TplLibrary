@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,22 +28,33 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Unary
 
     #endregion
 
-    //internal class SqaureRootOperator : UnaryOperatorBase
-    //{
-    //    internal SqaureRootOperator(ExpTreeNode parent) : base(parent)
-    //    {
-    //        //
-    //    }
+    #region Type Conversion
+    internal class TypeConversionOperator : UnaryOperatorBase
+    {
+        internal readonly TypeCode TargetType;
 
-    //    internal override object Eval()
-    //    {
-    //        var operand = Operand.Eval();
+        internal TypeConversionOperator(TypeCode tCode, ExpTreeNode parent) : base (parent)
+        {
+            TargetType = tCode;
+        }
 
-    //        if (operand is double dbl) return Math.Sqrt(dbl);
-    //        if (operand is bool b) return Math.Sqrt(b? 1 : 0);
-    //        throw new InvalidOperationException($"Square root can not be performed on the operand [{operand}]");
-    //    }
-    //}
+        internal override object Eval()
+        {
+            var operand = Operand.Eval();
+            if (TargetType == TypeCode.Boolean && operand is double dbl) return dbl != 0;
+            if (TargetType == TypeCode.Boolean && operand is string str)
+            {
+                if (bool.TryParse(str, out bool boolVal))
+                    return boolVal;
+                else
+                    return !string.IsNullOrEmpty(str);
+            }
+            if (TargetType == TypeCode.Double && operand is bool b) return b ? 1 : 0;
+
+            return Convert.ChangeType(operand, TargetType);
+        }
+    }
+    #endregion
 
     internal class GenericUnaryMathFunctionOperator : UnaryOperatorBase
     {
