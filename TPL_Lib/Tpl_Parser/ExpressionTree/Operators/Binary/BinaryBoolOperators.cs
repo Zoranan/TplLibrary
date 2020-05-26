@@ -72,6 +72,21 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
         }
     }
 
+    internal class LikeOperator : BinaryOperatorBase // like
+    {
+        internal LikeOperator(ExpTreeNode parent) : base(parent)
+        {
+            //
+        }
+
+        internal override object Eval()
+        {
+            var left = LeftOperand.Eval();
+            var right = RightOperand.Eval();
+            return Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(left as string ?? left.ToString(), right as string ?? right.ToString(), Microsoft.VisualBasic.CompareMethod.Text);
+        }
+    }
+
     internal class LessThanOperator : BinaryOperatorBase
     {
         internal LessThanOperator(ExpTreeNode parent) : base(parent)

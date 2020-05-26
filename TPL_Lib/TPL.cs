@@ -485,6 +485,9 @@ namespace TplLib
                     case "!=":
                         binaryOp = new NotEqualsOperator(parentExpNode);
                         break;
+                    case "like":
+                        binaryOp = new LikeOperator(parentExpNode);
+                        break;
                     case ">":
                         binaryOp = new GreaterThanOperator(parentExpNode);
                         break;
