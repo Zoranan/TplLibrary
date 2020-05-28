@@ -10,11 +10,11 @@ namespace TplLib.Functions.String_Functions
 {
     public class TplSplice : TplFunction
     {
-        private CompiledFormatter _splicer;
+        private readonly SpliceFormatter _splicer;
         public string TargetField { get; internal set; } = TplResult.DEFAULT_FIELD;
         public string AsField { get; internal set; }
 
-        internal TplSplice(string splice) { _splicer = new CompiledFormatter(splice); }
+        internal TplSplice(string splice) { _splicer = new SpliceFormatter(splice); }
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
