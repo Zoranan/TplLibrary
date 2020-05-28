@@ -7,11 +7,6 @@ using TplLib.Tpl_Parser;
 
 namespace TplLib.Functions
 {
-    // PIPELINE SYNTAX
-    //
-    // select fieldName1, fieldName2...
-    //
-
     /// <summary>
     /// Removes all fields from a list of TplResults EXCEPT the ones specified
     /// Specify one or more fields to keep by typing the field names after the select command
@@ -29,14 +24,6 @@ namespace TplLib.Functions
         {
             SelectedFields = fields;
         }
-
-        //public TplSelect (ParsableString query)
-        //{
-        //    query.GetNextList(TokenType.VAR_NAME)
-        //        .OnSuccess(fieldList => _selectedFields = fieldList.ResultsList.Select(f => f.Value()).ToList())
-        //        .OnFailure(_ => throw new ArgumentException($"Select function requires one or more fields to be specified for selection"))
-        //        .Source.VerifyAtEnd();
-        //}
         #endregion
 
         #region Processing
@@ -44,17 +31,22 @@ namespace TplLib.Functions
         {
             for (int j = 0; j < input.Count; j++)
             {
-                var r = input[j];
+                var result = input[j];
 
                 //Remove fields
-                for (int i = 0; i < r.Count; i++)
+                for (int i = 0; i < result.Count; i++)
                 {
-                    string k = r.Fields.Keys.ElementAt(i);
-                    if (!SelectedFields.Contains(k))
+                    var key = result.Fields.Keys.ElementAt(i);
+                    if (!SelectedFields.Contains(key))
                     {
-                        if (r.RemoveField(k))
+                        if (result.RemoveField(key))
                             i--;
+
+                        else
+                            result.SetFieldVisibility(key, false);
                     }
+                    else
+                        result.SetFieldVisibility(key, true);
                 }
 
                 //Remove empty results
@@ -62,8 +54,8 @@ namespace TplLib.Functions
                 bool containsOneSelectedField = false;
                 foreach (var f in SelectedFields)
                 {
-                    containsAllSelectedFields &= r.HasField(f);
-                    containsOneSelectedField |= r.HasField(f);
+                    containsAllSelectedFields &= result.HasField(f);
+                    containsOneSelectedField |= result.HasField(f);
                 }
 
                 if (!containsOneSelectedField || (!containsAllSelectedFields && RemoveEntriesWithNullValues))

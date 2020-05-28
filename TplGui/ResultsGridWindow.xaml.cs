@@ -22,8 +22,6 @@ namespace TplGui
     /// </summary>
     public partial class ResultsGridWindow : Window
     {
-        //public IEnumerable<TplResult> TplResults { get; private set; }
-
         public ResultsGridWindow()
         {
             InitializeComponent();
@@ -40,7 +38,7 @@ namespace TplGui
                     new DataGridTextColumn()
                     {
                         Binding = new Binding($@"Fields[{f}]") { Mode = BindingMode.OneWay },
-                        Header = f,
+                        Header = f.Replace("_", "__"),
                     }
                 );
 

@@ -7,6 +7,7 @@ using TplLib.Extensions;
 using System.Threading.Tasks;
 using TplLib.Functions;
 using CSharpUtils.Extensions;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace TplLib
 {
@@ -176,13 +177,26 @@ namespace TplLib
                     _fields.Remove(key);
                     success = true;
                 }
-                catch (ArgumentNullException)
+                catch (Exception e) when (e is ArgumentNullException || e is KeyNotFoundException)
                 {
                     success = false;
                 }
             }
 
             return success;
+        }
+
+        public bool SetFieldVisibility(string key, bool visible)
+        {
+            try
+            {
+                Fields[key].Visible = visible;
+                return true;
+            }
+            catch (KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         public bool HasField(string field)
@@ -229,6 +243,8 @@ namespace TplLib
 
         public class TplVariable
         {
+            public bool Visible { get; internal set; } = true;
+
             private object _value;
             public object Value {
                 get => _value;
@@ -236,7 +252,7 @@ namespace TplLib
                 internal set
                 {
                     _value = value;
-                    CastAutoType(); //May want to make this more controllable
+                    CastAutoType();
                 }
             }
             public TplVariable (object value) { Value = value; }
@@ -247,14 +263,6 @@ namespace TplLib
                 if (Value is string str) return str;
                 else return Value.ToString();
             }
-
-            //internal DateTime ToDateTime()
-            //{
-            //    if (Value is DateTime dt) return dt;
-            //    try { return Convert.ToDateTime(Value); }
-            //    catch (Exception e) when (e is FormatException || e is InvalidCastException)
-            //    { return default; }
-            //}
 
             internal double NumberValue()
             {
@@ -281,11 +289,6 @@ namespace TplLib
             {
                 _value = StringValue();
             }
-
-            //internal void CastDateTime()
-            //{
-            //    _value = ToDateTime();
-            //}
 
             internal void CastNumber()
             {
@@ -317,7 +320,7 @@ namespace TplLib
 
             public override string ToString()
             {
-                return Value.ToString();
+                return Visible ? Value.ToString() : null;
             }
         }
     }
