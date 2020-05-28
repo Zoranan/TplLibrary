@@ -23,7 +23,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
             if (left is bool lBool && right is bool rBool) return (lBool ? 1 : 0) + (rBool ? 1 : 0);
             if (left is bool lBool2 && right is double rDbl2) return (lBool2 ? 1 : 0) + rDbl2;
             if (left is double lDbl2 && right is bool rBool2) return lDbl2 + (rBool2 ? 1 : 0);
-            return left as string ?? left.ToString() + right as string ?? right.ToString();
+            return left.ToString() + right.ToString();
         }
     }
 
@@ -43,7 +43,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
             if (left is bool lBool && right is bool rBool) return (lBool ? 1 : 0) - (rBool ? 1 : 0);    // Maybe throw an exception instead?
             if (left is bool lBool2 && right is double rDbl2) return (lBool2 ? 1 : 0) - rDbl2;
             if (left is double lDbl2 && right is bool rBool2) return lDbl2 - (rBool2 ? 1 : 0);
-            return (left as string ?? left.ToString()).Replace(right as string ?? right.ToString(), "");   //Interesting concept... I wonder if other languages do this?
+            return left.ToString().Replace(right.ToString(), "");   //Interesting concept... I wonder if other languages do this?
         }
     }
     #endregion

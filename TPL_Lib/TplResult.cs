@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using TplLib.Extensions;
 using System.Threading.Tasks;
 using TplLib.Functions;
+using CSharpUtils.Extensions;
 
 namespace TplLib
 {
@@ -113,7 +114,7 @@ namespace TplLib
         #region Field Manipulation and Information
         public double NumericValueOf (string key)
         {
-            return Fields?[key]?.NumberValue() ?? 0;
+            return Fields.ContainsKey(key) ? Fields[key].NumberValue() : 0;
         }
 
         public bool TryNumericValueOf (string key, out double result)
@@ -125,12 +126,12 @@ namespace TplLib
 
         public string StringValueOf (string key)
         {
-            return _fields?[key].StringValue() ?? "";
+            return Fields.ContainsKey(key) ? Fields[key].StringValue() : "";
         }
 
         public object ValueOf(string key)
         {
-            return _fields?[key].Value;
+            return Fields.ContainsKey(key) ? Fields[key].Value : "";
         }
 
         public bool AddField(string key, IComparable value)
@@ -298,19 +299,19 @@ namespace TplLib
 
             internal void CastAutoType()
             {
-                try { _value = Convert.ToDouble(Value); return; }
-                catch (Exception e) when (e is FormatException || e is InvalidCastException)
-                { /*Convert Failed. Try a datetime*/ }
+                if (_value is string)
+                {
+                    try { _value = Convert.ToDouble(Value); return; }
+                    catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                    { /*Convert Failed. Try a boolean*/ }
 
-                try { _value = Convert.ToBoolean(Value); return; }
-                catch (Exception e) when (e is FormatException || e is InvalidCastException)
-                { /*Convert Failed. Lets try a double*/ }
-
-                //try { _value = Convert.ToDateTime(Value); return; }
-                //catch (Exception e) when (e is FormatException || e is InvalidCastException)
-                //{ /*Convert Failed. Set it to a string*/ }
-
-                CastString();
+                    try { _value = Convert.ToBoolean(Value); return; }
+                    catch (Exception e) when (e is FormatException || e is InvalidCastException)
+                    { /*Convert Failed. Set to string*/ }
+                }
+                
+                if (!_value.GetType().IsIn(typeof(double), typeof(bool), typeof(string)))
+                    CastString();
             }
             #endregion
 

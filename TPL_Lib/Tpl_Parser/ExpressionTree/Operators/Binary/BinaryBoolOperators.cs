@@ -39,7 +39,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
         }
     }
 
-    internal class LooseEqualsOperator : BinaryOperatorBase // ~=
+    internal class LooseEqualsOperator : BinaryOperatorBase // ~==
     {
         internal LooseEqualsOperator(ExpTreeNode parent) : base(parent)
         {
@@ -56,7 +56,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
         }
     }
 
-    internal class LooseNotEqualsOperator : BinaryOperatorBase // ~=
+    internal class LooseNotEqualsOperator : BinaryOperatorBase // ~!=
     {
         internal LooseNotEqualsOperator(ExpTreeNode parent) : base(parent)
         {
@@ -88,7 +88,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
         }
     }
 
-    internal class MatchOperator : BinaryOperatorBase // like
+    internal class MatchOperator : BinaryOperatorBase // match
     {
         internal MatchOperator(ExpTreeNode parent) : base(parent)
         {
@@ -116,7 +116,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Binary
             var right = RightOperand.Eval();
 
             if (left.GetType() == right.GetType() && left is IComparable lCom && right is IComparable rCom) return lCom.CompareTo(rCom) < 0;
-            return (left as string ?? left.ToString()).CompareTo((right as string ?? right.ToString())) < 0;
+            return (left as string ?? left.ToString()).CompareTo(right as string ?? right.ToString()) < 0;
         }
     }
 

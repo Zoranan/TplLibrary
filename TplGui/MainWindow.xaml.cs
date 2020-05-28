@@ -41,6 +41,7 @@ namespace TplGui
             _textBox.FastColoredTextBox.BackColor = System.Drawing.Color.FromArgb(255, 30, 30, 30);
             _textBox.FastColoredTextBox.ForeColor = System.Drawing.Color.White;
             _textBox.FastColoredTextBox.SelectionColor = System.Drawing.Color.FromArgb(150, 50, 180, 200);
+            _textBox.FastColoredTextBox.CaretColor = System.Drawing.Color.White;
 
             _textBox.FastColoredTextBox.Zoom = 125;
 
@@ -96,6 +97,7 @@ namespace TplGui
             {
                 errorPane.Visibility = Visibility.Visible;
                 errorListBox.ItemsSource = new List<string>() { e.Message };
+                File.WriteAllText("Error.txt", e.ToString());
             }
         }
 
