@@ -28,7 +28,7 @@ namespace TplLib.Tpl_Parser.ExpressionTree
     {
         internal readonly ExpTreeNode Parent;
 
-        private List<string> _varNames = new List<string>();
+        private readonly List<string> _varNames = new List<string>();
         internal IReadOnlyList<string> VarNames { get => _varNames; }
         
         protected List<ExpTreeNode> _children = new List<ExpTreeNode>();

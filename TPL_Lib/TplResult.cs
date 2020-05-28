@@ -120,7 +120,7 @@ namespace TplLib
         public bool TryNumericValueOf (string key, out double result)
         {
             var value = Fields?[key]?.NumberValue();
-            result = value.HasValue ? value.Value : 0;
+            result = value ?? 0;
             return value.HasValue;
         }
 

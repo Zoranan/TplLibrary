@@ -14,7 +14,7 @@ namespace TplLib.Functions
     /// </summary>
     public class TplWhere : TplFunction
     {
-        private ExpTreeNode _condition;
+        private readonly ExpTreeNode _condition;
 
         internal TplWhere(ExpTreeNode condition) { _condition = condition; }
 

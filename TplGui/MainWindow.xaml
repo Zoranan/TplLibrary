@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TplGui"
-        xmlns:irony="clr-namespace:Irony.WinForms;assembly=Irony.WinForms" xmlns:integ1="http://schemas.microsoft.com/netfx/2007/xaml/presentation"
         mc:Ignorable="d"
         Title="TPL Editor" 
         Height="450" 
@@ -19,7 +18,7 @@
         <WindowsFormsHost TabIndex="0" 
                           Margin="5" 
                           Name="textBoxHolder"
-                          KeyDown="textBoxHolder_KeyDown"/>
+                          KeyDown="TextBoxHolder_KeyDown"/>
 
         <Grid Grid.Row="1"
               Margin="5"
@@ -35,7 +34,7 @@
                     Content="X"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Top"
-                    Click="closeErrorPane_ButtonClick"/>
+                    Click="CloseErrorPane_ButtonClick"/>
         </Grid>
 
     </Grid>

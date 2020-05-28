@@ -29,8 +29,8 @@ namespace TplGui
     public partial class MainWindow : Window
     {
         private static readonly string _tempPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "~TEMP.tpl");
-        private FastColoredTextBoxHighlighter _highlighter;
-        private IronyTextBox _textBox;
+        private readonly FastColoredTextBoxHighlighter _highlighter;
+        private readonly IronyTextBox _textBox;
 
         public MainWindow()
         {
@@ -101,12 +101,12 @@ namespace TplGui
             }
         }
 
-        private void closeErrorPane_ButtonClick(object sender, RoutedEventArgs e)
+        private void CloseErrorPane_ButtonClick(object sender, RoutedEventArgs e)
         {
             errorPane.Visibility = Visibility.Collapsed;
         }
 
-        private void textBoxHolder_KeyDown(object sender, KeyEventArgs e)
+        private void TextBoxHolder_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F5)
             {

@@ -1,10 +1,8 @@
-﻿using Irony.Ast;
-using Irony.Parsing;
+﻿using Irony.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace TplParser
 {
@@ -29,31 +27,37 @@ namespace TplParser
             
             var _decimal = new RegexBasedTerminal("decimal", @"-?\d+\.\d+") 
             { EditorInfo = new TokenEditorInfo(TokenType.Literal, TokenColor.Number, TokenTriggers.None) };
-            
-            var typeConvert = new CustomRegexBasedTerminal("type_convert_op", @"\[(?<type>number|string|bool)\]");
-            typeConvert.EditorInfo = new TokenEditorInfo(TokenType.Keyword, TokenColor.Keyword, TokenTriggers.None);
-            typeConvert.ValueSelector = m =>
+
+            var typeConvert = new CustomRegexBasedTerminal("type_convert_op", @"\[(?<type>number|string|bool)\]")
             {
-                switch (m.Groups["type"].Value)
+                EditorInfo = new TokenEditorInfo(TokenType.Keyword, TokenColor.Keyword, TokenTriggers.None),
+                ValueSelector = m =>
                 {
-                    case "number":
-                        return TypeCode.Double;
-                    case "string":
-                        return TypeCode.String;
-                    case "bool":
-                        return TypeCode.Boolean;
-                    default:
-                        return null;
+                    switch (m.Groups["type"].Value)
+                    {
+                        case "number":
+                            return TypeCode.Double;
+                        case "string":
+                            return TypeCode.String;
+                        case "bool":
+                            return TypeCode.Boolean;
+                        default:
+                            return null;
+                    }
                 }
             };
 
-            var variable = new CustomRegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+");
-            variable.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
-            variable.ValueSelector = s => s.Value.Substring(1);
+            var variable = new CustomRegexBasedTerminal("variable", @"\$[0-9A-Za-z_]+")
+            {
+                EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None),
+                ValueSelector = s => s.Value.Substring(1)
+            };
 
-            var argument = new CustomRegexBasedTerminal("ArgumentName", "-[A-Za-z]+");
-            argument.EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None);
-            argument.ValueSelector = s => s.Value.Substring(1);
+            var argument = new CustomRegexBasedTerminal("ArgumentName", "-[A-Za-z]+")
+            {
+                EditorInfo = new TokenEditorInfo(TokenType.Identifier, TokenColor.Identifier, TokenTriggers.None),
+                ValueSelector = s => s.Value.Substring(1)
+            };
 
             var word = new RegexBasedTerminal("word", @"\w+");
             argument.EditorInfo = new TokenEditorInfo(TokenType.Text, TokenColor.Text, TokenTriggers.None);
