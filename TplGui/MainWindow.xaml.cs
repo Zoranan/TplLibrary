@@ -96,8 +96,12 @@ namespace TplGui
                     //Execute
                     ProcessingOverlay.Visibility = Visibility.Visible;
                     textBoxHolder.Visibility = Visibility.Hidden;
+                    var sw = new System.Diagnostics.Stopwatch();
+                    sw.Start();
                     var results = await Task.Run(() => query.Process());
-                    
+                    sw.Stop();
+                    TimeTextBlock.Text = sw.ElapsedMilliseconds + "ms";
+
                     var resultWindow = new ResultsGridWindow();
                     resultWindow.InitDataGrid(results);
                     resultWindow.Owner = this;

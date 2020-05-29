@@ -27,7 +27,13 @@
             <MenuItem Header="Run" Click="RunMenuItem_Click"/>
             <MenuItem Header="Help"/>
         </Menu>
-        
+
+        <TextBlock Grid.Row="0"
+                   HorizontalAlignment="Right"
+                   Name="TimeTextBlock"
+                   Text=""
+                   Margin="5,0"/>
+
         <!--Text Box-->
         <WindowsFormsHost TabIndex="0"
                           Grid.Row="1"

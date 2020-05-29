@@ -56,9 +56,11 @@
     <Compile Include="Functions\TplDedup.cs" />
     <Compile Include="Functions\TplDelete.cs" />
     <Compile Include="Functions\TplEval.cs" />
+    <Compile Include="Functions\TplFirst.cs" />
     <Compile Include="Functions\TplFunction.cs" />
     <Compile Include="Functions\TplGroup.cs" />
     <Compile Include="Functions\TplKeyValue.cs" />
+    <Compile Include="Functions\TplLast.cs" />
     <Compile Include="Functions\TplRegex.cs" />
     <Compile Include="Functions\String Functions\TplReplace.cs" />
     <Compile Include="Functions\TplSelect.cs" />

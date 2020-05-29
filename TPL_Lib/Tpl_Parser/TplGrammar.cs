@@ -202,6 +202,8 @@ namespace TplParser
                 | "dedup"   + LIST_OF_VARIABLES + SWITCH_ARGUMENT
                 | "delete"  + LIST_OF_VARIABLES
                 | "eval"    + variable + "=" + EXPRESSION_LVL0
+                | "first"   + integer
+                | "last"    + integer
                 | "group"   + OPTIONAL_VAR + STRING + STRING
                 | "kv"      + LIST_OF_VARIABLES + STRING
                 | "rex"     + OPTIONAL_VAR + STRING + LIST_OF_ARGUMENTS

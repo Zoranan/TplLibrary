@@ -87,6 +87,20 @@ namespace TplLib
                             };
                             break;
 
+                        case "first":
+                            currentFunction = new TplFirst()
+                            {
+                                First = funcNode[1].FindTokenAndGetValue<int>(),
+                            };
+                            break;
+
+                        case "last":
+                            currentFunction = new TplLast()
+                            {
+                                Last = funcNode[1].FindTokenAndGetValue<int>(),
+                            };
+                            break;
+
                         case "group":
                             currentFunction = new TplGroup()
                             {
