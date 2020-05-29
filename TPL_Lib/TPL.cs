@@ -64,6 +64,20 @@ namespace TplLib
                             };
                             break;
 
+                        case "delete":
+                            {
+                                var fields = GetOptionalVariableList(funcNode[1]);
+
+                                if (fields.Count < 1)
+                                    throw funcNode[0].GetException("At least one field name is required in Delete function");
+
+                                currentFunction = new TplDelete()
+                                {
+                                    SelectedFields = fields
+                                };
+                            }
+                            break;
+
                         case "eval":
                             var expTree = GetAsExpressionTree(funcNode[3], null);
 

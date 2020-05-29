@@ -2,6 +2,7 @@
 using Irony;
 using Irony.WinForms;
 using Irony.WinForms.Highlighter;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -31,6 +32,8 @@ namespace TplGui
         private static readonly string _tempPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "~TEMP.tpl");
         private readonly FastColoredTextBoxHighlighter _highlighter;
         private readonly IronyTextBox _textBox;
+        private bool _running = false;
+        private string _currentFilePath = null;
 
         public MainWindow()
         {
@@ -42,12 +45,12 @@ namespace TplGui
             _textBox.FastColoredTextBox.ForeColor = System.Drawing.Color.White;
             _textBox.FastColoredTextBox.SelectionColor = System.Drawing.Color.FromArgb(150, 50, 180, 200);
             _textBox.FastColoredTextBox.CaretColor = System.Drawing.Color.White;
-
+            
             _textBox.FastColoredTextBox.Zoom = 125;
 
             textBoxHolder.Child = _textBox;
             _textBox.FastColoredTextBox.ChangeFontSize(2);
-            _textBox.Load += (s, e) => _textBox.Focus();
+            _textBox.Load += (s, e) => _textBox.FastColoredTextBox.Focus();
 
             var colorSettings = new ColorSettings()
             {
@@ -70,10 +73,15 @@ namespace TplGui
                 _textBox.Text = File.ReadAllText(_tempPath);
         }
 
-        private void RunTplQuery()
+        private async void RunTplQuery()
         {
+            if (_running)
+                return;
+
             try
             {
+                _running = true;
+
                 var query = Tpl.Create(_textBox.Text, out IReadOnlyList<LogMessage> parseErrors);
                 if (query == null)
                 {
@@ -84,9 +92,12 @@ namespace TplGui
                 {
                     errorPane.Visibility = Visibility.Collapsed;
                     Console.WriteLine("Pipeline Created");
-                    
+
                     //Execute
-                    var results = query.Process();
+                    ProcessingOverlay.Visibility = Visibility.Visible;
+                    textBoxHolder.Visibility = Visibility.Hidden;
+                    var results = await Task.Run(() => query.Process());
+                    
                     var resultWindow = new ResultsGridWindow();
                     resultWindow.InitDataGrid(results);
                     resultWindow.Owner = this;
@@ -99,7 +110,82 @@ namespace TplGui
                 errorListBox.ItemsSource = new List<string>() { e.Message };
                 File.WriteAllText("Error.txt", e.ToString());
             }
+            finally
+            {
+                _running = false;
+                textBoxHolder.Visibility = Visibility.Visible;
+                ProcessingOverlay.Visibility = Visibility.Hidden;
+            }
         }
+
+        #region File save and load
+        private void SaveCurrentText()
+        {
+            if (string.IsNullOrWhiteSpace(_currentFilePath))
+            {
+                SaveCurrentTextAs();
+                return;
+            }
+
+            try
+            {
+                File.WriteAllText(_currentFilePath, _textBox.Text);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error saving file. {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveCurrentTextAs()
+        {
+            var sfd = new SaveFileDialog()
+            {
+                Filter = "Text Processing Language File (*.tpl) | *.tpl",
+                DefaultExt = "*.tpl",
+            };
+            var dialogResult = sfd.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                _currentFilePath = sfd.FileName;
+                SaveCurrentText();
+                Title = _currentFilePath;
+            }
+        }
+
+        private void OpenFile()
+        {
+            var ofd = new OpenFileDialog()
+            {
+                Filter = "Text Processing Language File (*.tpl) | *.tpl",
+                DefaultExt = "*.tpl",
+            };
+            var dialogResult = ofd.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value)
+            {
+                _currentFilePath = ofd.FileName;
+                Title = _currentFilePath;
+                try
+                {
+                    _textBox.Text = File.ReadAllText(_currentFilePath);
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"Error saving file. {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void NewTplFile()
+        {
+            _currentFilePath = null;
+            _textBox.Text = "";
+            Title = "Tpl";
+        }
+
+        #endregion
 
         private void CloseErrorPane_ButtonClick(object sender, RoutedEventArgs e)
         {
@@ -113,6 +199,55 @@ namespace TplGui
                 e.Handled = true;
                 RunTplQuery();
             }
+
+            else if (e.Key == Key.S && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                e.Handled = true;
+                SaveCurrentText();
+            }
+
+            else if (e.Key == Key.S && Keyboard.Modifiers == (ModifierKeys.Control | ModifierKeys.Shift))
+            {
+                e.Handled = true;
+                SaveCurrentTextAs();
+            }
+
+            else if (e.Key == Key.O && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                e.Handled = true;
+                OpenFile();
+            }
+
+            else if (e.Key == Key.N && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                e.Handled = true;
+                NewTplFile();
+            }
+        }
+
+        private void RunMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            RunTplQuery();
+        }
+
+        private void SaveMenuItem_Click_1(object sender, RoutedEventArgs e)
+        {
+            SaveCurrentText();
+        }
+
+        private void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            SaveCurrentTextAs();
+        }
+
+        private void OpenMenuItem_Click_2(object sender, RoutedEventArgs e)
+        {
+            OpenFile();
+        }
+
+        private void NewMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            NewTplFile();
         }
     }
 }

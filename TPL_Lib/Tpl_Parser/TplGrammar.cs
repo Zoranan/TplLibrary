@@ -200,6 +200,7 @@ namespace TplParser
 
             FUNCTION.Rule = ToTerm("between") + OPTIONAL_VAR + STRING + STRING + SWITCH_ARGUMENT
                 | "dedup"   + LIST_OF_VARIABLES + SWITCH_ARGUMENT
+                | "delete"  + LIST_OF_VARIABLES
                 | "eval"    + variable + "=" + EXPRESSION_LVL0
                 | "group"   + OPTIONAL_VAR + STRING + STRING
                 | "kv"      + LIST_OF_VARIABLES + STRING

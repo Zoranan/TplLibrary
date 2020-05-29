@@ -54,6 +54,7 @@
     <Compile Include="Functions\String Functions\TplChangeCase.cs" />
     <Compile Include="Functions\TplBetween.cs" />
     <Compile Include="Functions\TplDedup.cs" />
+    <Compile Include="Functions\TplDelete.cs" />
     <Compile Include="Functions\TplEval.cs" />
     <Compile Include="Functions\TplFunction.cs" />
     <Compile Include="Functions\TplGroup.cs" />
