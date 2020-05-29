@@ -554,6 +554,14 @@ namespace TplLib
                             unaryOp = new NotOperator(parentExpNode);
                             break;
 
+                        //Property Checking
+                        case "lengthof":
+                            unaryOp = new LengthOperator(parentExpNode);
+                            break;
+                        case "typeof":
+                            unaryOp = new TypeOperator(parentExpNode);
+                            break;
+
                         default:
                             unaryOp = new GenericUnaryMathFunctionOperator(opStr, parentExpNode);
                             break;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Unary
 {
-    #region Prefix Bool
+    #region Bool
     internal class NotOperator : UnaryOperatorBase
     {
         internal NotOperator(ExpTreeNode parent) : base(parent)
@@ -52,6 +52,39 @@ namespace TplLib.Tpl_Parser.ExpressionTree.Operators.Unary
             if (TargetType == TypeCode.Double && operand is bool b) return b ? 1 : 0;
 
             return Convert.ChangeType(operand, TargetType);
+        }
+    }
+    #endregion
+
+    #region Property Checking
+    internal class LengthOperator : UnaryOperatorBase
+    {
+        internal LengthOperator(ExpTreeNode parent) : base(parent)
+        {
+            //
+        }
+
+        internal override object Eval()
+        {
+            var operand = Operand.Eval();
+
+            if (operand is double dbl) return Math.Floor(dbl / 10) + 1;
+            if (operand is bool) return 1;
+            return (operand as string ?? operand.ToString()).Length;
+        }
+    }
+
+    internal class TypeOperator : UnaryOperatorBase
+    {
+        internal TypeOperator(ExpTreeNode parent) : base(parent)
+        {
+            //
+        }
+
+        internal override object Eval()
+        {
+            var operand = Operand.Eval();
+            return operand.GetType().Name;
         }
     }
     #endregion

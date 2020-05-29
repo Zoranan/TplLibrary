@@ -180,6 +180,8 @@ namespace TplParser
                 | ToTerm("sin", "round_op") + EXPRESSION_LVL8
                 | ToTerm("tan", "round_op") + EXPRESSION_LVL8
                 | ToTerm("sqrt", "round_op") + EXPRESSION_LVL8
+                | ToTerm("lengthof", "length_op") + EXPRESSION_LVL8
+                | ToTerm("typeof", "type_op") + EXPRESSION_LVL8
                 | typeConvert + EXPRESSION_LVL8
                 ;
 
