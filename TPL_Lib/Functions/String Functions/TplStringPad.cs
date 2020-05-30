@@ -29,38 +29,17 @@ namespace TplLib.Functions.String_Functions
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            //Pad right
-            if (PadRight)
+            Parallel.ForEach(input, result =>
             {
-                foreach (var i in input)
+                foreach (var field in TargetFields)
                 {
-                    foreach (var f in TargetFields)
+                    if (result.HasField(field))
                     {
-                        if (i.HasField(f))
-                        {
-                            var padded = i.StringValueOf(f).PadRight(TotalLength, PaddingChar);
-                            i.AddOrUpdateField(f, padded);
-                        }
+                        var val = result.StringValueOf(field);
+                        result.AddOrUpdateField(field, PadRight ? val.PadRight(TotalLength, PaddingChar) : val.PadLeft(TotalLength, PaddingChar));
                     }
                 }
-            }
-
-            //Pad left
-            else
-            {
-                foreach (var i in input)
-                {
-                    foreach (var f in TargetFields)
-                    {
-                        if (i.HasField(f))
-                        {
-                            var padded = i.StringValueOf(f).PadLeft(TotalLength, PaddingChar);
-                            i.AddOrUpdateField(f, padded);
-                        }
-                    }
-                }
-            }
-
+            });
             return input;
         }
     }

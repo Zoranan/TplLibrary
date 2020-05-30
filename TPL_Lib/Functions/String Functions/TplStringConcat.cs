@@ -35,16 +35,14 @@ namespace TplLib.Functions.String_Functions
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (var currentResult in input)
+            Parallel.ForEach(input, result =>
             {
+                StringBuilder sb = new StringBuilder();
                 foreach (var value in ConcatValues)
-                    sb.Append(value.IsVar ? currentResult.StringValueOf(value.Value) : value.Value);
+                    sb.Append(value.IsVar ? result.StringValueOf(value.Value) : value.Value);
 
-                currentResult.AddOrUpdateField(AsField, sb.ToString());
-                sb.Clear();
-            }
+                result.AddOrUpdateField(AsField, sb.ToString());
+            });
 
             return input;
         }

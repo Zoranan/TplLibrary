@@ -20,13 +20,13 @@ namespace TplLib.Functions.String_Functions
         {
             var results = input.ToList();
 
-            foreach(var r in results)
+            Parallel.ForEach(results, result =>
             {
-                if (r.HasField(TargetField))
+                if (result.HasField(TargetField))
                 {
-                    r.AddOrUpdateField(AsField, _splicer.Format(r.StringValueOf(TargetField)));
+                    result.AddOrUpdateField(AsField, _splicer.Format(result.StringValueOf(TargetField)));
                 }
-            }
+            });
 
             return results;
         }

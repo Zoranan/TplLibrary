@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TplLib.Tpl_Parser;
+using System.Threading.Tasks;
 
 namespace TplLib.Functions
 {
@@ -48,22 +49,42 @@ namespace TplLib.Functions
         {
             var output = new List<TplResult>();
 
-            foreach (var r in input)
+            //Parallel.ForEach(input, result =>
+            //{
+            //    if (result.HasField(TargetField))
+            //    {
+            //        var match = Rex.Match(result.StringValueOf(TargetField));
+
+            //        if (match.Success)
+            //        {
+            //            var groupNames = Rex.GetNamedCaptureGroupNames();
+            //            foreach (var key in groupNames)
+            //            {
+            //                result.AddOrUpdateField(key, match.Groups[key].Value);
+            //            }
+
+            //            if (!PassThru)
+            //                output.Add(result);
+            //        }
+            //    }
+            //});
+
+            foreach (var result in input)
             {
-                if (r.HasField(TargetField))
+                if (result.HasField(TargetField))
                 {
-                    var match = Rex.Match(r.StringValueOf(TargetField));
+                    var match = Rex.Match(result.StringValueOf(TargetField));
 
                     if (match.Success)
                     {
                         var groupNames = Rex.GetNamedCaptureGroupNames();
                         foreach (var key in groupNames)
                         {
-                            r.AddOrUpdateField(key, match.Groups[key].Value);
+                            result.AddOrUpdateField(key, match.Groups[key].Value);
                         }
 
                         if (!PassThru)
-                            output.Add(r);
+                            output.Add(result);
                     }
                 }
             }

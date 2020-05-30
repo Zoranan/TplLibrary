@@ -156,14 +156,11 @@ namespace TplLib
             if (READONLY_FIELDS.Contains(key))
                 throw new InvalidOperationException(key + " is reserved as readonly");
 
-            try
-            {
+            if (_fields.ContainsKey(key))
                 _fields[key].Value = value;
-            }
-            catch (KeyNotFoundException)
-            {
+
+            else
                 _fields.Add(key, new TplVariable(value));
-            }
         }
 
         public bool RemoveField(string key)

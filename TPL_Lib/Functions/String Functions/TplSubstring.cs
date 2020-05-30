@@ -31,32 +31,17 @@ namespace TplLib.Functions.String_Functions
 
             var results = input.ToList();
 
-            if (MaxLength == -1)
+            Parallel.ForEach(input, result =>
             {
-                foreach (var i in results)
+                try
                 {
-                    try
-                    {
-                        var newVal = i.StringValueOf(TargetField).Substring(StartIndex);
-                        i.AddOrUpdateField(AsField, newVal);
-                    }
-                    catch { i.AddOrUpdateField(AsField, ""); }
+                    var newVal = result.StringValueOf(TargetField);
+                    result.AddOrUpdateField(AsField, MaxLength == -1 ? newVal.Substring(StartIndex) : newVal.Substring(StartIndex, MaxLength));
                 }
-            }
-            else
-            {
-                foreach (var i in results)
-                {
-                    try
-                    {
-                        var newVal = i.StringValueOf(TargetField).Substring(StartIndex, MaxLength);
-                        i.AddOrUpdateField(AsField, newVal);
-                    }
-                    catch { i.AddOrUpdateField(AsField, ""); }
-                }
-            }
+                catch (ArgumentOutOfRangeException) { result.AddOrUpdateField(AsField, ""); }
+            });
 
-            return results;
+            return input;
         }
     }
 }

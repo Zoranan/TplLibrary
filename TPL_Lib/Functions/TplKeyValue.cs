@@ -9,21 +9,8 @@ using TplLib.Tpl_Parser;
 
 namespace TplLib.Functions
 {
-    // PIPELINE SYNTAX
-    //
-    // keyvalue 
-    // keyvalue fieldName1, fieldName2
-    // keyvalue kvDelim=":"
-    // keyvalue fieldName1, fieldName2 kvDelim=":"
-    // kv ...
-    //
-    // Accepted kvDelim values: (:/\|=, and space)
-    //
-
     /// <summary>
-    /// Automatically searches for key-value pairs in each TplResult and adds them as fields
-    /// Use the 'kvDelim=":::"' option to specify the key value deliminator (default is "=")
-    /// Specify one or more field names to search through by entering their names
+    /// Searches for key-value pairs using a supplied regex in each TplResult and adds them as fields
     /// </summary>
     public class TplKeyValue : TplFunction
     {
@@ -76,18 +63,18 @@ namespace TplLib.Functions
         #region Processing
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            foreach (var r in input)
+            Parallel.ForEach(input, result =>
             {
                 foreach (var field in TargetFields)
                 {
-                    var matches = _keyValueRegex.Matches(r.StringValueOf(field));
+                    var matches = _keyValueRegex.Matches(result.StringValueOf(field));
 
                     foreach (Match m in matches)
                     {
-                        r.AddOrUpdateField(m.Groups["key"].Value, m.Groups["value"].Value);
+                        result.AddOrUpdateField(m.Groups["key"].Value, m.Groups["value"].Value);
                     }
                 }
-            }
+            });
 
             return input;
         }

@@ -15,12 +15,12 @@ namespace TplLib.Functions.String_Functions
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            foreach (var result in input)
+            Parallel.ForEach(input, result =>
             {
                 var splits = result.StringValueOf(TargetField).Split(new string[] { SplitOn }, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < splits.Length; i++)
                     result.AddField((i + 1).ToString(), splits[i]);
-            }
+            });
 
             return input;
         }

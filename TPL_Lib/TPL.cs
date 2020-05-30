@@ -150,7 +150,7 @@ namespace TplLib
                                     throw funcNode[0].GetException("Expected 1 or more of the following arguments: 'count', 'sum', or 'avg' in 'stats' function");
 
                                 List<string> byFields;
-                                if (funcNode[2].ChildNodes.Any())
+                                if (funcNode[2].ChildNodes.Any()) // if the keyword 'by' is present, look for by fields
                                 {
                                     byFields = GetOptionalVariableList(funcNode[2].ChildNodes[1]);
                                     if (!byFields.Any())

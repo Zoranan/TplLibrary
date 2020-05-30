@@ -28,13 +28,13 @@ namespace TplLib.Functions
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            foreach (var result in input)
+            Parallel.ForEach(input, result => 
             {
                 foreach (var varName in _evaluation.VarNames)
                     _evaluation.SetVariableValue(varName, result.ValueOf(varName));
 
                 result.AddOrUpdateField(NewFieldName, _evaluation.Eval());
-            }
+            });
 
             return input;
         }

@@ -24,22 +24,22 @@ namespace TplLib.Functions.String_Functions
 
             if (MatchingRegex == null)
             {
-                foreach (var currentResult in input)
+                Parallel.ForEach(input, result =>
                 {
-                    foreach (var f in TargetFields)
+                    foreach (var field in TargetFields)
                     {
-                        currentResult.AddOrUpdateField(f, ToUpper ? currentResult.StringValueOf(f).ToUpper() : currentResult.StringValueOf(f).ToLower());
+                        result.AddOrUpdateField(field, ToUpper ? result.StringValueOf(field).ToUpper() : result.StringValueOf(field).ToLower());
                     }
-                }
+                });
             }
 
             else
             {
-                foreach (var i in input)
+                Parallel.ForEach(input, result =>
                 {
-                    foreach (var f in TargetFields)
+                    foreach (var field in TargetFields)
                     {
-                        var fValue = i.StringValueOf(f);
+                        var fValue = result.StringValueOf(field);
                         var matches = MatchingRegex.Matches(fValue);
                         StringBuilder sb = new StringBuilder();
 
@@ -81,9 +81,9 @@ namespace TplLib.Functions.String_Functions
                             sb.Append(fValue.Substring(sb.Length));
 
                         //Store it
-                        i.AddOrUpdateField(f, sb.ToString());
+                        result.AddOrUpdateField(field, sb.ToString());
                     }
-                }
+                });
             }
 
             return input;
