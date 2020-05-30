@@ -85,20 +85,12 @@
     <Compile Include="Tpl_Parser\TplGrammar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ExpressionEV">
-      <HintPath>..\..\ExpressionEV\ExpressionEV\bin\Release\ExpressionEV.dll</HintPath>
-    </Reference>
     <Reference Include="Irony, Version=1.1.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
       <HintPath>..\packages\Irony.1.1.0\lib\net40\Irony.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
     <Reference Include="System" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="bin\Release\ExpressionEV.dll" />
-    <Content Include="bin\Release\TextFormatterLanguage.dll" />
-    <Content Include="bin\Release\TPL_Lib.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Splice\TextFormatterLanguage\Splice.csproj">
