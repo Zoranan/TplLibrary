@@ -6,27 +6,16 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TplLib.Tpl_Parser;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 
 namespace TplLib.Functions
 {
-    // PIPELINE SYNTAX
-    //
-    // rex fieldName "Regex"
-    // rex "Regex" passthru=true (Keeps results even if they dont match)
-    // rex fieldName "Regex"
-    // rex "Regex" (implies using _raw)
-    //
-
     /// <summary>
-    /// Applys a specified regex to a list of TplResults.
-    /// Named capture groups in the regex are stored as fields in the TplResults
-    /// You can specify the field the regex will search using the 'field=name' option (or just entering the field name)
-    /// The 'passthu=true' option keeps this function from removing results that dont match
+    /// Applys a specified regex to a list of TplResults, storing named capture groups as fields in each TplResult
     /// </summary>
     public class TplRegex : TplFunction
     {
-        //private static readonly Regex _rexArgumentRegex = new Regex("^ *((?<field>[A-Za-z_]+[A-Za-z0-9_]*) +)?\"(?<reg>[^\"]*)\" *$", RegexOptions.Compiled);
-
         #region Properties
         public Regex Rex { get; internal set; }
         public string TargetField { get; internal set; } = TplResult.DEFAULT_FIELD;
@@ -47,29 +36,9 @@ namespace TplLib.Functions
         #region Processing
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            var output = new List<TplResult>();
+            var dict = new ConcurrentDictionary<long, TplResult>();
 
-            //Parallel.ForEach(input, result =>
-            //{
-            //    if (result.HasField(TargetField))
-            //    {
-            //        var match = Rex.Match(result.StringValueOf(TargetField));
-
-            //        if (match.Success)
-            //        {
-            //            var groupNames = Rex.GetNamedCaptureGroupNames();
-            //            foreach (var key in groupNames)
-            //            {
-            //                result.AddOrUpdateField(key, match.Groups[key].Value);
-            //            }
-
-            //            if (!PassThru)
-            //                output.Add(result);
-            //        }
-            //    }
-            //});
-
-            foreach (var result in input)
+            Parallel.ForEach(input, (result, _, resultNum) =>
             {
                 if (result.HasField(TargetField))
                 {
@@ -84,15 +53,23 @@ namespace TplLib.Functions
                         }
 
                         if (!PassThru)
-                            output.Add(result);
+                            dict.TryAdd(resultNum, result);
                     }
                 }
+            });
+
+            //Return
+            if (!PassThru)
+            {
+                var output = new List<TplResult>(dict.Count);
+
+                for (long i = 0; i < dict.Count; i++)
+                    output.Add(dict[i]);
+
+                return output;
             }
-
-            if (PassThru)
-                output = input;
-
-            return output;
+            else
+                return input;
         }
         #endregion
     }
