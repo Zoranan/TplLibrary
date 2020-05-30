@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -29,19 +31,36 @@ namespace TplLib.Functions.File_IO_Functions
 
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
-            if (!_fileNamePattern.Contains("*") && !Recurse)
-                input.AddRange(
-                    File.ReadAllLines(_fullPath)
-                        .Select(l => new TplResult(l, _fullPath))
-                    );
+            var dict = new ConcurrentDictionary<string, ConcurrentDictionary<long, TplResult>>();
+            var filePaths = Directory.EnumerateFiles(_folderPath, _fileNamePattern, Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly);
 
-            else
-                input.AddRange(
-                    Directory.EnumerateFiles(_folderPath, _fileNamePattern, Recurse ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly)
-                        .SelectMany(path =>
-                            File.ReadAllLines(path)
-                                .Select(l => new TplResult(l, path)))
-                    );
+            Parallel.ForEach(filePaths, filePath =>
+            {
+                var fileDict = new ConcurrentDictionary<long, TplResult>();
+
+                Parallel.ForEach(File.ReadLines(filePath), (line, _, lineNum) =>
+                {
+                    var attempts = 0;
+                    while (!fileDict.TryAdd(lineNum, new TplResult(line, filePath)))
+                    {
+                        if (attempts > 5)
+                            throw new FileLoadException($"Error adding line {lineNum} from file {filePath}");
+
+                        attempts++;
+                    };
+                });
+
+                while (!dict.TryAdd(filePath, fileDict)) ;  //Add the file
+            });
+
+            //Combine all results from each file in proper order
+            foreach (var filePath in filePaths)
+            {
+                var fileDict = dict[filePath];
+
+                for (long i = 0; i < fileDict.Count; i++)
+                    input.Add(fileDict[i]);
+            }
 
             return input;
         }
