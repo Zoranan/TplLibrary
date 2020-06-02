@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -96,8 +97,10 @@ namespace TplGui
                     //Execute
                     ProcessingOverlay.Visibility = Visibility.Visible;
                     textBoxHolder.Visibility = Visibility.Hidden;
+
                     var sw = new System.Diagnostics.Stopwatch();
                     sw.Start();
+                    
                     var results = await Task.Run(() => query.Process());
                     sw.Stop();
                     TimeTextBlock.Text = sw.ElapsedMilliseconds + "ms";
@@ -190,6 +193,20 @@ namespace TplGui
         }
 
         #endregion
+
+        //public BitmapImage Convert(Bitmap src)
+        //{
+        //    using (var ms = new MemoryStream())
+        //    {
+        //        src.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+        //        var image = new BitmapImage();
+        //        image.BeginInit();
+        //        ms.Seek(0, SeekOrigin.Begin);
+        //        image.StreamSource = ms;
+        //        image.EndInit();
+        //        return image;
+        //    }
+        //}
 
         private void CloseErrorPane_ButtonClick(object sender, RoutedEventArgs e)
         {

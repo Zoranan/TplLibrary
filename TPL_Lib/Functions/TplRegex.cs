@@ -37,8 +37,8 @@ namespace TplLib.Functions
         protected override List<TplResult> InnerProcess(List<TplResult> input)
         {
             var dict = new ConcurrentDictionary<long, TplResult>();
-
-            Parallel.ForEach(input, (result, _, resultNum) =>
+            long resultNum = 0;
+            Parallel.ForEach(input, result =>
             {
                 if (result.HasField(TargetField))
                 {
@@ -53,7 +53,10 @@ namespace TplLib.Functions
                         }
 
                         if (!PassThru)
+                        {
                             dict.TryAdd(resultNum, result);
+                            resultNum++;
+                        }
                     }
                 }
             });

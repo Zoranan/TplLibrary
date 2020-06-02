@@ -35,6 +35,10 @@
                    Margin="5,0"/>
 
         <!--Text Box-->
+        <Image Name="tbImgHolder" 
+               Grid.Row="1"
+               Margin="5"/>
+
         <WindowsFormsHost TabIndex="0"
                           Grid.Row="1"
                           Margin="5" 
@@ -59,7 +63,7 @@
         </Grid>
 
         <Border Grid.RowSpan="3"
-                Background="#CC000000"
+                Background="#99000000"
                 Name="ProcessingOverlay"
                 Visibility="Hidden">
             <Label Content="Processing..."
