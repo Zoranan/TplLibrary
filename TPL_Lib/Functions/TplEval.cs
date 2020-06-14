@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,13 +10,6 @@ using TplLib.Tpl_Parser.ExpressionTree;
 
 namespace TplLib.Functions
 {
-
-    // PIPELINE SYNTAX
-    //
-    // eval fieldName = expressionOrValue
-    // eval expressionOrValue as fieldName
-    //
-
     /// <summary>
     /// Creates a new field, or updates an existing field using the expression specified
     /// </summary>
@@ -30,8 +24,17 @@ namespace TplLib.Functions
         {
             Parallel.ForEach(input, result => 
             {
+                _evaluation.ClearAllVariables();
+
                 foreach (var varName in _evaluation.VarNames)
-                    _evaluation.SetVariableValue(varName, result.ValueOf(varName));
+                {
+                    var value = result.ValueOf(varName);
+
+                    if (value == null)
+                        return;
+
+                    _evaluation.SetVariableValue(varName, value);
+                }
 
                 result.AddOrUpdateField(NewFieldName, _evaluation.Eval());
             });

@@ -22,16 +22,28 @@ namespace TplLib.Functions
         {
             for (int i=0; i<input.Count; i++)
             {
+                var allVarsSet = true;
+
                 //Set the variables in our condition to what we have in this TplResult
                 foreach (var varName in _condition.VarNames)
-                    _condition.SetVariableValue(varName, input[i].ValueOf(varName));
+                {
+                    var value = input[i].ValueOf(varName);
 
-                //Evaluate the condition. If it is false, remove this TplResult
-                if (!_condition.EvalAsBool())
+                    if (value == null)
+                        allVarsSet = false;
+
+                    else
+                        _condition.SetVariableValue(varName, value);
+                }
+
+                //Evaluate the condition. If it is false or contains null variables, remove this TplResult
+                if (!allVarsSet || !_condition.EvalAsBool())
                 {
                     input.RemoveAt(i);
                     i--;
                 }
+
+                _condition.ClearAllVariables();
             }
 
             return input;

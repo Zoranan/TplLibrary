@@ -132,7 +132,7 @@ namespace TplLib
 
         public object ValueOf(string key)
         {
-            return Fields.ContainsKey(key) ? Fields[key].Value : "";
+            return Fields.ContainsKey(key) ? Fields[key].Value : null;
         }
 
         public bool AddField(string key, IComparable value)
