@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TplParser
 {
-    [Language("TPL", "0.5", "Text Processing Language")]
+    [Language("TPL", "0.75", "Text Processing Language")]
     public class TplGrammar : Grammar
     {
         public TplGrammar() : base(false)
